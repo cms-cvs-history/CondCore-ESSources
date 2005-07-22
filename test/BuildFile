@@ -1,0 +1,7 @@
+<use name=clhep>
+<use name=FWCore/ParameterSet>
+<use name=CondFormats/Calibration>
+<use name=CondCore/IOVService>
+<use name=CondCore/MetaDataService>
+<use name=CondCore/ESSources>
+<bin file=trackerped.cpp></bin>
