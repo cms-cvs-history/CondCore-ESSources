@@ -1,0 +1,9 @@
+process E2E = {
+# empty input service, fire 10 events
+	source = EmptyInputService {int32 MaxEvents = 10}
+	es_source = PedestalRetriever{string connect="sqlite_file:trackerped.db" string iovname="TrackerCalibration"}
+#create a small analyzer
+        module prod = TrackerCalibAnalyzer {}
+#provide a scheduler path
+        path p1 = { prod }	
+}
