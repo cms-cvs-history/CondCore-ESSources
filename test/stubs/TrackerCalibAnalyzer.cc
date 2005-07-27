@@ -18,7 +18,7 @@ Toy EDProducers and EDProducts for testing purposes only.
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include "CondFormats/Calibration/interface/Pedestals.h"
-#include "CondFormats/DataRecord/interface/CalibrationRecord.h"
+#include "CondFormats/DataRecord/interface/TrackerPedestalsRcd.h"
 
 using namespace std;
 
@@ -43,7 +43,7 @@ namespace edmtest
     // Context is not used.
     std::cout <<" I AM IN THE EVENT LOOP "<<e.id() <<std::endl;
     edm::eventsetup::ESHandle<Pedestals> ped;
-    context.get<CalibrationRecord>().get(ped);
+    context.get<TrackerPedestalsRcd>().get(ped);
     //call tracker code
     //
     std::cout <<" Tracker ped for 100 "<<std::endl;
