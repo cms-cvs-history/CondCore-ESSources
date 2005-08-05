@@ -47,7 +47,6 @@ namespace edmtest
     //call tracker code
     //
     std::cout <<" Tracker ped for 100 "<<std::endl;
-    /*
     Pedestals::ItemIterator it;
     Pedestals::ItemIterator itbeg=(*ped).m_pedestals.begin();
     Pedestals::ItemIterator itend=(*ped).m_pedestals.end();
@@ -58,7 +57,6 @@ namespace edmtest
 	std::cout << "mean " << (*it).m_mean << ",variance" << (*it).m_variance <<std::endl;
       }       
     }
-    */
   }
   DEFINE_FWK_MODULE(TrackerCalibAnalyzer)
 }

@@ -73,7 +73,7 @@ int main(int csize, char** cline ) {
       pedIov.markWrite(iovPlace);
       std::string iovtoken=pedIov.toString();
       pool::Placement pedPlace(m_dbConnection, pool::DatabaseSpecification::PFN, "Pedestals", pool::Guid::null(), tech); 
-      int totmodules=1000;
+      int totmodules=10;
       //int totmodules=16000;
       int iovn=0;
       int evtn=10;
