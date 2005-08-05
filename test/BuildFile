@@ -12,5 +12,4 @@
 <library file=stubs/TrackerCalibAnalyzer.cc name=TrackerCalibAnalyzer>
         <flags SEAL_PLUGIN_NAME="TrackerCalibAnalyzer">
 </library>
-<bin file=main.cc name=e2ecalibtest>
-</bin>
+
