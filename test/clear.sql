@@ -13,7 +13,7 @@ drop table POOL_CONT___LINKS;
 drop table POOL_CONT___PARAMS;
 
 -- Tables created from the object-relational mapping
-drop table PEDESTALS_M_PEDEST_1;
+drop table PEDESTALS_VALUES;
 drop table PEDESTALS;
 drop table IOV_IOV;
 drop table IOV;

@@ -8,7 +8,7 @@
 <use name=CondFormats/DataRecord>
 <use name=FWCore/Services>	
 <bin file=trackerped.cpp></bin>
-
+<bin file=constructToken.cpp></bin>
 <library file=stubs/TrackerCalibAnalyzer.cc name=TrackerCalibAnalyzer>
         <flags SEAL_PLUGIN_NAME="TrackerCalibAnalyzer">
 </library>

@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding="UTF-8"?>
+<!DOCTYPE Mapping SYSTEM "InMemory">
+<Mapping version="Pedestals-default" >
+  <Class table="PEDESTALS" id_columns="ID" name="Pedestals" >
+    <Array table="PEDESTALS_M_PEDEST_1" id_columns="ID_ID" name="m_pedestals" position_column="POS" >
+      <Object table="PEDESTALS_M_PEDEST_1" id_columns="POS ID_ID" name="Pedestals::Item" >
+        <Primitive column="M_PEDESTALS_PEDESTALS_ITEM_M_1" name="m_mean" />
+        <Primitive column="M_PEDESTALS_PEDESTALS_ITEM_M_2" name="m_variance" />
+      </Object >
+    </Array >
+  </Class >
+</Mapping >

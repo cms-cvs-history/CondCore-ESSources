@@ -1,0 +1,9 @@
+sqlplus cms_xiezhen_dev@devdb10/xiezhen123 < clear.sql
+
+sqlplus cms_xiezhen_dev@devdb10/xiezhen123 < offlinecreation-oracle.sql
+
+pool_build_object_relational_mapping -f Pedestals-v2-mapping.xml -d 
+CondFormatsCalibration -c oracle://devdb10 -p xiezhen123 -u cms_xiezhen_dev
+
+pool_setup_database -f dbsetup.xml -c oracle://devdb10 -u cms_xiezhen_dev 
+-p xiezhen123 -d CondFormatsCalibration
