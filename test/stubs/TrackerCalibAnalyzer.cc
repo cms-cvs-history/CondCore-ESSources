@@ -41,7 +41,8 @@ namespace edmtest
   {
     using namespace edm::eventsetup;
     // Context is not used.
-    std::cout <<" I AM IN THE EVENT LOOP "<<e.id() <<std::endl;
+    std::cout <<" I AM IN RUN NUMBER "<<e.id().run() <<std::endl;
+    std::cout <<" ---EVENT NUMBER "<<e.id().run() <<std::endl;
     edm::eventsetup::ESHandle<Pedestals> ped;
     context.get<TrackerPedestalsRcd>().get(ped);
     //call tracker code
@@ -51,12 +52,13 @@ namespace edmtest
     Pedestals::ItemIterator itbeg=(*ped).m_pedestals.begin();
     Pedestals::ItemIterator itend=(*ped).m_pedestals.end();
     int counter=0;
-    for(it=itbeg; it!=itend; ++it){
+    /* for(it=itbeg; it!=itend; ++it){
       ++counter;
       if(counter<=100){
 	std::cout << "mean " << (*it).m_mean << ",variance" << (*it).m_variance <<std::endl;
       }       
     }
+    */
   }
   DEFINE_FWK_MODULE(TrackerCalibAnalyzer)
 }

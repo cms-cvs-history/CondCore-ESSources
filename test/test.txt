@@ -1,6 +1,6 @@
 process E2E = {
 # empty input service, fire 10 events
-	source = EmptyInputService {untracked int32 maxEvents = 10}
+	source = EmptyInputService {untracked int32 maxEvents = 100 untracked uint32 firstRun = 1 untracked uint32 numberEventsInRun = 10}
 	es_source = TrackerPedestalsRetriever{string 
 connect="sqlite_file:trackerped.db" string iovname="TrackerCalibration"}
 #create a small analyzer
