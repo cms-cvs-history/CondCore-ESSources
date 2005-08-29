@@ -1,12 +1,15 @@
 <use name=clhep>
 <use name=FWCore/ParameterSet>
 <use name=CondFormats/Calibration>
+<use name=CondFormats/EcalObjects>
+<use name=CondCore/DBCommon>
 <use name=CondCore/IOVService>
 <use name=CondCore/MetaDataService>
 <use name=CondCore/ESSources>
 <use name=FWCore/Framework>	
 <use name=CondFormats/DataRecord>
 <use name=FWCore/Services>	
+<bin file=testWriteCalib.cpp></bin>
 <bin file=trackerped.cpp></bin>
 <bin file=constructToken.cpp></bin>
 <library file=stubs/TrackerCalibAnalyzer.cc name=TrackerCalibAnalyzer>
