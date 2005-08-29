@@ -9,8 +9,8 @@
 #include <map>
 #include <iostream>
 int main(){
-  //std::string contact("oracle://devdb10/cms_xiezhen_dev");
-  std::string contact("sqlite_file://ecalcalib.db");
+  std::string contact("oracle://devdb10/cms_xiezhen_dev");
+  //std::string contact("sqlite_file:ecalcalib.db");
   pool::POOLContext::loadComponent( "SEAL/Services/MessageService" );
   pool::POOLContext::setMessageVerbosityLevel( seal::Msg::Error );
   const std::string userNameEnv = "POOL_AUTH_USER=cms_xiezhen_dev";
@@ -50,8 +50,9 @@ int main(){
   item.m_mean=0.56;
   item.m_variance=0.98;
   ped2->m_pedestals.insert(std::make_pair(channelId,item));
-
+  
   std::string tok2=w.write<EcalPedestals>(ped2);
+  std::cout<<"token "<<tok2<<std::endl;
   //assign IOV
   tillrun=10;
   iov->iov.insert(std::make_pair(tillrun,tok2));
