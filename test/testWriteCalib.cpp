@@ -21,7 +21,6 @@ int main(){
   cond::IOV* iov=new cond::IOV;
   w.createContainer("EcalPedestals");
   EcalPedestals* ped1=new EcalPedestals;
-  std::cout<<1<<std::endl;
   int channelId;
   EcalPedestals::Item item;
   
@@ -29,7 +28,6 @@ int main(){
   item.m_mean=0.3;
   item.m_variance=0.4;
   ped1->m_pedestals.insert(std::make_pair(channelId,item));
-  std::cout<<2<<std::endl;
   
   channelId=1858;
   item.m_mean=0.5;
@@ -37,12 +35,9 @@ int main(){
   ped1->m_pedestals.insert(std::make_pair(channelId,item));
   w.startTransaction();
   std::string tok=w.write<EcalPedestals>(ped1);
-  std::cout<<"about to commit1"<<std::endl;
-  std::cout<<3<<std::endl;
   //assign IOV
   int tillrun=5;
   iov->iov.insert(std::make_pair(tillrun,tok));
-  std::cout<<4<<std::endl;
   
   EcalPedestals* ped2=new EcalPedestals; //the user gives up the object ownership upon send it to the writer
   std::cout<<5<<std::endl;
@@ -60,12 +55,9 @@ int main(){
   //assign IOV
   tillrun=10;
   iov->iov.insert(std::make_pair(tillrun,tok2));
-  std::cout<<6<<std::endl;
   w.createContainer("IOV");
-  std::string iovToken=w.write<cond::IOV>(iov);
-  
+  std::string iovToken=w.write<cond::IOV>(iov);  
   w.commitTransaction();
-  std::cout<<"about to commit2"<<std::endl;
   std::cout<<"writercommitted"<<std::endl;
   //register the iovToken to the metadata service
   cond::MetaData metadata_svc(contact);
