@@ -1,0 +1,12 @@
+--Define the new persistent object in CondFormats/XXXObjects package
+  --add its definition in interface; implementation in src
+  --add it in the dictionary selection file src/classes_def.xml, and include file src/classes.h
+  --register the data object to the event setup system in src/T_EventSetup_<classname>.cc
+
+--Use the datarecord code generator "mkrecord" to generate the new record entry:documentation
+https://uimon.cern.ch/twiki/bin/view/CMS/SkeletonCodeGenerator
+The right place to hold the new data record is CondFormats/DataRecord
+
+--Tell the plugin system the new object is associated with which data record
+  --in CondCore/XXXPlugins/src/plugin.cc, add the object-record pair in the registration macro
+

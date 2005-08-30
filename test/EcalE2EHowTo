@@ -18,4 +18,6 @@ NOTE: current limitations
 	setenv POOL_AUTH_USER cms_xiezhen_dev
         setenv POOL_AUTH_PASSWORD xiezhen123
     should be changed to a smarter way.
+  --bool loadAll=false is not supported by EventSetup, Chris is working on it.
   --can't load mapping objects and pedestals objects at the same time due to my limit knowledge of handling complex parameter set....
+  
