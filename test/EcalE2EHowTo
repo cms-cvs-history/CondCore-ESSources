@@ -6,11 +6,12 @@
   --this one single program can be split into two where one writes pedestals and mappings separately.
 
 -data reading through EventSetup: 
-   cmsRun --parameter-set load_mapping.txt
-   cmsRun --parameter-set load_ped.txt
+   cmsRun --parameter-set load_test.txt     //load both EcalPedestals and EcalMapping data
+   cmsRun --parameter-set load_mapping.txt  //load only EcalMapping data
+   cmsRun --parameter-set load_ped.txt      //load only EcalPedestals data
    --you should see data changes when iov expires.
    --note in the .txt, the usage the tag name as the entry point to the system
-   --strange problems with plugin manager: if null pointer error happens, just ignore and try to run a second time.
+   --strange problems with plugin manager sometimes: if null pointer error or assert error happens, just ignore and try to run a second time.
 
 NOTE: current limitations
   --only support runnumber based IOV implementation 
@@ -19,5 +20,3 @@ NOTE: current limitations
         setenv POOL_AUTH_PASSWORD xiezhen123
     should be changed to a smarter way.
   --bool loadAll=false is not supported by EventSetup, Chris is working on it.
-  --can't load mapping objects and pedestals objects at the same time due to my limit knowledge of handling complex parameter set....
-  

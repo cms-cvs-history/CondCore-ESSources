@@ -5,7 +5,10 @@ process TEST = {
 	path p = { get & print }
 
 
-	es_source = PoolDBESSource { string tag = "EcalMapping_v1"
+	es_source = PoolDBESSource {  VPSet toGet = {
+                                    {string record = "EcalMappingRcd" 
+                                     string tag = "EcalMapping_v1"
+                                     } }
 		    		     bool loadAll = true
                                      string connect = "sqlite_file:ecalcalib.db"
 			             string timetype = "runnumber" 
