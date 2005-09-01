@@ -1,3 +1,7 @@
+-check the following data proxy plugins exist before running the example using SealPluginDump 
+    EcalMappingRcd_EcalMapping_Proxy
+    EcalPedestalsRcd_EcalPedestals_Proxy
+
 -pure offline writing example: testWriteCalib
   --write out EcalPedestals objects into "EcalPedestals" container; assign IOV to them; write out the pedestal iov object into the "IOV" container
   --register the pedestal iov object token to the metadata service with the tag name "EcalPedestals_2008_test"
