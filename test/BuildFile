@@ -11,7 +11,6 @@
 <use name=FWCore/Services>	
 <bin file=testWriteCalib.cpp></bin>
 <bin file=testReadCalib.cpp></bin>
-<bin file=testendoftime.cpp></bin>
 <bin file=trackerped.cpp></bin>
 <bin file=constructToken.cpp></bin>
 <library file=stubs/TrackerCalibAnalyzer.cc name=TrackerCalibAnalyzer>
