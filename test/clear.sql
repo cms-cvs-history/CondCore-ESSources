@@ -15,6 +15,6 @@ drop table POOL_CONT___PARAMS;
 -- Tables created from the object-relational mapping
 drop table PEDESTALS_VALUES;
 drop table PEDESTALS;
-drop table IOV_IOV;
-drop table IOV;
-drop table IOVMETA;
+drop table COND__IOV;
+drop table COND__IOV_IOV;
+drop table METADATA;
