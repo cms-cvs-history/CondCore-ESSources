@@ -49,8 +49,12 @@ namespace edmtest
     //
     std::cout <<" Ecal peds for channel 1858 "<<std::endl;
     int channelID=1858;
-    EcalPedestals* myped=const_cast<EcalPedestals*>(pPeds.product());
-    std::cout << "mean " << (myped->m_pedestals)[channelID].m_mean << ",variance" << (myped->m_pedestals)[channelID].m_variance << std::endl;    
+    //EcalPedestals* myped=const_cast<EcalPedestals*>(pPeds.product());
+    const EcalPedestals* myped=pPeds.product();
+    std::map<int,EcalPedestals::Item>::const_iterator it=myped->m_pedestals.find(channelID);
+    if( it!=myped->m_pedestals.end() ){
+      std::cout << "mean " <<it->second.m_mean << ",variance" << it->second.m_variance << std::endl;    
+    }
   }
   DEFINE_FWK_MODULE(EcalPedestalsAnalyzer)
 }
