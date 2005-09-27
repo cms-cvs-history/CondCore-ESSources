@@ -28,14 +28,22 @@ int main(){
   int channelId;
   EcalPedestals::Item item;
  
-  channelId=1878;
-  item.m_mean=0.3;
-  item.m_variance=0.4;
+  channelId=1656;
+  item.mean_x1 =0.91;
+  item.rms_x1  =0.17;
+  item.mean_x6 =0.52;
+  item.rms_x6  =0.03;
+  item.mean_x12=0.16;
+  item.rms_x12 =0.05;
   ped1->m_pedestals.insert(std::make_pair(channelId,item));
   
-  channelId=1858;
-  item.m_mean=0.5;
-  item.m_variance=0.94;
+  channelId=1200;
+  item.mean_x1=0.5;
+  item.rms_x1=0.94;
+  item.mean_x6 =0.72;
+  item.rms_x6  =0.07;
+  item.mean_x12=0.87;
+  item.rms_x12 =0.07;
   ped1->m_pedestals.insert(std::make_pair(channelId,item));
 
   std::string ped1tok=w.write<EcalPedestals>(ped1, "EcalPedestals");//pool::Ref takes the ownership of ped1
@@ -45,14 +53,22 @@ int main(){
   pediov->iov.insert(std::make_pair(tillrun,ped1tok));
   
   EcalPedestals* ped2=new EcalPedestals; //the user gives up the object ownership upon send it to the writer
-  channelId=1878;
-  item.m_mean=0.33;
-  item.m_variance=0.44;
+  channelId=1656;
+  item.mean_x1=0.33;
+  item.rms_x1=0.44;
+  item.mean_x6 =0.22;
+  item.rms_x6  =0.11;
+  item.mean_x12=0.39;
+  item.rms_x12 =0.12;
   ped2->m_pedestals.insert(std::make_pair(channelId,item));
   
-  channelId=1858;
-  item.m_mean=0.56;
-  item.m_variance=0.98;
+  channelId=1200;
+  item.mean_x1=0.56;
+  item.rms_x1=0.98;
+  item.mean_x6 =0.83;
+  item.rms_x6  =0.27;
+  item.mean_x12=0.54;
+  item.rms_x12 =0.27;
   ped2->m_pedestals.insert(std::make_pair(channelId,item));
   
   std::string pedtok2=w.write<EcalPedestals>(ped2,"EcalPedestals");

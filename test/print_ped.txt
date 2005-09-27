@@ -2,7 +2,7 @@
 
 process TEST = {
 
-	path p = { prod & print }
+	path p = { print, prod }
 
 
 	es_source = PoolDBESSource { VPSet toGet = {
@@ -20,5 +20,12 @@ process TEST = {
 	source = EmptyInputService {untracked int32 maxEvents = 100 untracked uint32 firstRun = 1 untracked uint32 numberEventsInRun = 10}
 
 	module prod = EcalPedestalsAnalyzer{}
+
+	module get = EventSetupRecordDataGetter { VPSet toGet = {
+	       {string record = "EcalPedestalsRcd"
+	        vstring data = {"EcalPedestals"} } 
+	       }
+	       untracked bool verbose = true 
+	}
 
 }

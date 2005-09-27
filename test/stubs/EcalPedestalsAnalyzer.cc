@@ -42,18 +42,22 @@ namespace edmtest
     using namespace edm::eventsetup;
     // Context is not used.
     std::cout <<" I AM IN RUN NUMBER "<<e.id().run() <<std::endl;
-    std::cout <<" ---EVENT NUMBER "<<e.id().run() <<std::endl;
+    std::cout <<" ---EVENT NUMBER "<<e.id().event() <<std::endl;
     edm::eventsetup::ESHandle<EcalPedestals> pPeds;
     context.get<EcalPedestalsRcd>().get(pPeds);
+
     //call tracker code
     //
-    std::cout <<" Ecal peds for channel 1858 "<<std::endl;
-    int channelID=1858;
+    int channelID=1656;
     //EcalPedestals* myped=const_cast<EcalPedestals*>(pPeds.product());
     const EcalPedestals* myped=pPeds.product();
     std::map<int,EcalPedestals::Item>::const_iterator it=myped->m_pedestals.find(channelID);
     if( it!=myped->m_pedestals.end() ){
-      std::cout << "mean " <<it->second.m_mean << ",variance" << it->second.m_variance << std::endl;    
+      std::cout << "Ecal channel: " << channelID
+                << "  mean_x1:  " <<it->second.mean_x1 << " rms_x1: " << it->second.rms_x1
+                << "  mean_x6:  " <<it->second.mean_x6 << " rms_x6: " << it->second.rms_x6
+                << "  mean_x12: " <<it->second.mean_x12 << " rms_x12: " << it->second.rms_x12
+                << std::endl;
     }
   }
   DEFINE_FWK_MODULE(EcalPedestalsAnalyzer)

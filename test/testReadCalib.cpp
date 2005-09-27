@@ -53,7 +53,7 @@ int main(int csize, char** cline ) {
     svc->transaction().start(pool::ITransaction::READ);
     pool::Ref<EcalPedestals> ped(svc,pedToken);
     std::cout<<"real pointer "<<&(*ped)<<std::endl;
-    std::cout<<"channel 1858 "<<"mean " << (*ped).m_pedestals[1858].m_mean << ",variance" << (*ped).m_pedestals[1858].m_variance;
+    std::cout<<"channel 1858 "<<"mean_x1 " << (*ped).m_pedestals[1858].mean_x1 << ",rms_x1" << (*ped).m_pedestals[1858].rms_x1;
     std::cout << std::endl;
     svc->transaction().commit();
     svc->session().disconnectAll();
