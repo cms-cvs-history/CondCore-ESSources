@@ -27,7 +27,7 @@ int main(){
   EcalPedestals* ped1=new EcalPedestals;
   int channelId;
   EcalPedestals::Item item;
- 
+  
   channelId=1656;
   item.mean_x1 =0.91;
   item.rms_x1  =0.17;
@@ -45,11 +45,11 @@ int main(){
   item.mean_x12=0.87;
   item.rms_x12 =0.07;
   ped1->m_pedestals.insert(std::make_pair(channelId,item));
-
+  
   std::string ped1tok=w.write<EcalPedestals>(ped1, "EcalPedestals");//pool::Ref takes the ownership of ped1
   std::cout<<"ped1 token "<<ped1tok<<std::endl;
   //assign IOV
-  int tillrun=5;
+  unsigned long tillrun=5;
   pediov->iov.insert(std::make_pair(tillrun,ped1tok));
   
   EcalPedestals* ped2=new EcalPedestals; //the user gives up the object ownership upon send it to the writer
@@ -81,11 +81,11 @@ int main(){
   pediov->iov.insert(std::make_pair(tillrun,pedtok2));
   std::string pediovToken=w.write<cond::IOV>(pediov,"IOV");  
   std::cout<<"ped iov token "<<pediovToken<<std::endl;
-
+  
   EcalMapping* mymap=new EcalMapping;
   mymap->buildMapping();
   std::string mappingtok=w.write<EcalMapping>(mymap,"EcalMapping");
-  
+  std::cout<<"endoftime "<<edm::IOVSyncValue::endOfTime().eventID().run()<<std::endl;
   mapiov->iov.insert(std::make_pair(edm::IOVSyncValue::endOfTime().eventID().run(), mappingtok));
   
   w.commitTransaction();
