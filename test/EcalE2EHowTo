@@ -10,15 +10,15 @@
   --this one single program can be split into two where one writes pedestals and mappings separately.
 
 -data reading through EventSetup: 
-   cmsRun --parameter-set load_test.txt     //load both EcalPedestals and EcalMapping data
-   cmsRun --parameter-set load_mapping.txt  //load only EcalMapping data
-   cmsRun --parameter-set load_ped.txt      //load only EcalPedestals data
+   cmsRun --parameter-set load_test.cfg     //load both EcalPedestals and EcalMapping data
+   cmsRun --parameter-set load_mapping.cfg  //load only EcalMapping data
+   cmsRun --parameter-set load_ped.cfg      //load only EcalPedestals data
    --you should see data changes when iov expires.
-   --note in the .txt, the usage the tag name as the entry point to the system
+   --note in the .cfg, the usage the tag name as the entry point to the system
    --strange problems with plugin manager sometimes: if null pointer error or assert error happens, just ignore and try to run a second time.
 
 -the responsibility of the ESSource tests stop at the previous step: i.e. to check *if* conditions module delivers new data when iov expires. To get/print the real data values from ESHandle should be done in the subsequent algorithm EsProducer modules.If you want to check the correctness of the data already in this package, there's a quick mock analysis module stubs/EcalPedestalsAnalyzer can be used:
-  cmsRun --parameter-set print_ped.txt
+  cmsRun --parameter-set print_ped.cfg
   --you should see the printout "mean 0.5,variance0.94" for run<=6 and it changes to "mean 0.56,variance0.98 for run>6.
 
 NOTE: current limitations
