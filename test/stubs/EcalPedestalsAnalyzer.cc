@@ -43,7 +43,7 @@ namespace edmtest
     // Context is not used.
     std::cout <<" I AM IN RUN NUMBER "<<e.id().run() <<std::endl;
     std::cout <<" ---EVENT NUMBER "<<e.id().event() <<std::endl;
-    edm::eventsetup::ESHandle<EcalPedestals> pPeds;
+    edm::ESHandle<EcalPedestals> pPeds;
     context.get<EcalPedestalsRcd>().get(pPeds);
 
     //call tracker code
