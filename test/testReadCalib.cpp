@@ -25,8 +25,8 @@ int main(int csize, char** cline ) {
   ::putenv( const_cast<char*>( userNameEnv.c_str() ) );
   const std::string passwdEnv = "POOL_AUTH_PASSWORD=xiezhen123";
   ::putenv( const_cast<char*>( passwdEnv.c_str() ) );
-  std::string m_dbConnection( "oracle://devdb10/cms_xiezhen_dev");
-  //std::string m_dbConnection( "sqlite_file:trackerped.db");
+  //std::string m_dbConnection( "oracle://devdb10/cms_xiezhen_dev");
+  std::string m_dbConnection( "sqlite_file:trackerped.db");
   std::cout<<"connecting..."<<m_dbConnection<<std::endl;
   seal::PluginManager::get()->initialise();
   try {
