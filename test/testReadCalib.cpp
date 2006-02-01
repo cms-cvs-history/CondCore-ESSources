@@ -1,4 +1,3 @@
-#include "Reflection/Class.h"
 #include "PluginManager/PluginManager.h"
 #include "POOLCore/Token.h"
 #include "FileCatalog/URIParser.h"

@@ -69,10 +69,10 @@ int main(int csize, char** cline ) {
       long int tech(pool::POOL_RDBMS_StorageType.type()); 
       svc->transaction().start(pool::ITransaction::UPDATE);
       pool::Ref<cond::IOV> pedIov(svc, new cond::IOV);
-      pool::Placement iovPlace(m_dbConnection, pool::DatabaseSpecification::PFN, "IOV", seal::reflex::Type(), tech); 
+      pool::Placement iovPlace(m_dbConnection, pool::DatabaseSpecification::PFN, "IOV", ROOT::Reflex::Type(), tech); 
       pedIov.markWrite(iovPlace);
       std::string iovtoken=pedIov.toString();
-      pool::Placement pedPlace(m_dbConnection, pool::DatabaseSpecification::PFN, "Pedestals", seal::reflex::Type(), tech); 
+      pool::Placement pedPlace(m_dbConnection, pool::DatabaseSpecification::PFN, "Pedestals", ROOT::Reflex::Type(), tech); 
       int totmodules=10;
       //int totmodules=16000;
       int iovn=0;

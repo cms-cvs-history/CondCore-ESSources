@@ -15,21 +15,24 @@
 //#include "DataSvc/ICacheSvc.h"
 #include "DataSvc/Ref.h"
 
-#include "RelationalAccess/RelationalException.h"
+//#include "RelationalAccess/Exception.h"
 #include "RelationalAccess/IRelationalService.h"
 #include "RelationalAccess/IRelationalDomain.h"
-#include "RelationalAccess/IRelationalSession.h"
-#include "RelationalAccess/IRelationalTransaction.h"
-#include "RelationalAccess/IRelationalSchema.h"
-#include "RelationalAccess/IRelationalTable.h"
-#include "RelationalAccess/IRelationalTableDataEditor.h"
-#include "RelationalAccess/IRelationalQuery.h"
-#include "RelationalAccess/IRelationalCursor.h"
-#include "AttributeList/AttributeList.h"
-#include "POOLCore/POOLContext.h"
+#include "RelationalAccess/ISession.h"
+#include "RelationalAccess/ITransaction.h"
+#include "RelationalAccess/ISchema.h"
+#include "RelationalAccess/ITable.h"
+#include "RelationalAccess/ITableDataEditor.h"
+#include "RelationalAccess/IQuery.h"
+#include "RelationalAccess/ICursor.h"
+#include "CoralBase/AttributeList.h"
+#include "CoralBase/AttributeSpecification.h"
+#include "CoralBase/Attribute.h"
 #include "SealKernel/Context.h"
 #include "StorageSvc/DbType.h"
 #include "CondFormats/Calibration/interface/Pedestals.h"
+#include "SealKernel/ComponentLoader.h"
+#include "SealKernel/IMessageService.h"
 //#include "CondCore/IOVService/interface/IOV.h"
 //#include "CondCore/MetaDataService/interface/MetaData.h"
 #include<iostream>
@@ -47,36 +50,39 @@ int main(int csize, char** cline ) {
   std::string dbConnection( "sqlite_file:trackerped.db");
   std::cout<<"connecting..."<<dbConnection<<std::endl;
   seal::PluginManager::get()->initialise();
+  seal::Context* context=new seal::Context;
+  seal::Handle<seal::ComponentLoader> loader = new seal::ComponentLoader( context );
   try {
     // Loads the seal message stream
-    pool::POOLContext::loadComponent( "SEAL/Services/MessageService" );
-    pool::POOLContext::setMessageVerbosityLevel( seal::Msg::Error );
-    pool::POOLContext::loadComponent( "POOL/Services/EnvironmentAuthenticationService" );
-    pool::POOLContext::loadComponent( "POOL/Services/RelationalService" );
-    seal::IHandle<pool::IRelationalService> serviceHandle = pool::POOLContext::context()->query<pool::IRelationalService>( "POOL/Services/RelationalService" );
+    loader->load( "SEAL/Services/MessageService" );
+    loader->load( "CORAL/Services/EnvironmentAuthenticationService" );
+    loader->load( "CORAL/Services/RelationalService" );
+    std::vector< seal::Handle<seal::IMessageService> > v_msgSvc;
+    context->query( v_msgSvc );
+    if ( ! v_msgSvc.empty() ) {
+      seal::Handle<seal::IMessageService>& msgSvc = v_msgSvc.front();
+      msgSvc->setOutputLevel( seal::Msg::Error);
+    }
+    seal::IHandle<coral::IRelationalService> serviceHandle = context->query<coral::IRelationalService>( "CORAL/Services/RelationalService" );
     if ( ! serviceHandle ) {
       throw std::runtime_error( "Could not retrieve the relational service" );
     }
-    pool::IRelationalDomain& domain = serviceHandle->domainForConnection( dbConnection );
+    coral::IRelationalDomain& domain = serviceHandle->domainForConnection( dbConnection );
     // Creating a session
-    std::auto_ptr< pool::IRelationalSession > session( domain.newSession( dbConnection ) );
+    std::auto_ptr< coral::ISession > session( domain.newSession( dbConnection ) );
     // Establish a connection with the server
     std::cout << "Connecting..." << std::endl;
-    if ( ! session->connect() ) {
-      throw std::runtime_error( "Could not connect to the database server." );
-    }
+    session->connect();
     // Start a transaction
     std::cout << "Starting a new transaction" << std::endl;
-    if ( ! session->transaction().start() ) {
-      throw std::runtime_error( "Could not start a new transaction." );
-    }
-    pool::IRelationalTable& table=session->userSchema().tableHandle("PEDESTALS");
+    session->transaction().start() ;
+    session->nominalSchema().tableHandle("PEDESTALS");
     std::cout<< "Querying : SELECT IOV_VALUE_ID, TILLTIME FROM PEDESTALS"<< std::endl;
-    std::auto_ptr< pool::IRelationalQuery > query1( table.createQuery() );
+    std::auto_ptr< coral::IQuery > query1( session->nominalSchema().newQuery() );
     query1->setRowCacheSize( 10 );
     query1->addToOutputList( "IOV_VALUE_ID" );
     query1->addToOutputList( "TILLTIME" );
-    pool::IRelationalCursor& cursor1 = query1->process();
+    coral::ICursor& cursor1 = query1->execute();
     std::map<long, std::string> iovmap;
     pool::Token tk;
     tk.setDb("3E60FA40-D105-DA11-981C-000E0C4DE431");//PFN GUID
@@ -85,22 +91,18 @@ int main(int csize, char** cline ) {
     tk.setClassID(classid);
     tk.setTechnology(pool::POOL_RDBMS_StorageType.type());
     tk.oid().first=0;
-    if( cursor1.start() ){
-      while( cursor1.next() ) {
-	const pool::AttributeList& row = cursor1.currentRow();
-	long myl;
-	row["IOV_VALUE_ID"].getValue<long>(myl);
-	tk.oid().second=int(myl);
-	std::string mytoken=tk.toString();
-	std::cout<<"made token "<< mytoken<<std::endl;
-	long mytime;
-	row["TILLTIME"].getValue<long>(mytime);
-	iovmap.insert(std::make_pair(mytime,mytoken));
-	std::cout<<"IOV_VALUE_ID "<<myl<<std::endl;
-	std::cout<<"TOKEN "<<mytoken<<std::endl;
-	std::cout<<"TILLTIME "<<mytime<<std::endl;
-      }
-    } 
+    while( cursor1.next() ) {
+      const coral::AttributeList& row = cursor1.currentRow();
+      long myl=row["IOV_VALUE_ID"].data<long>();
+      tk.oid().second=int(myl);
+      std::string mytoken=tk.toString();
+      std::cout<<"made token "<< mytoken<<std::endl;
+      long mytime=row["TILLTIME"].data<long>();
+      iovmap.insert(std::make_pair(mytime,mytoken));
+      std::cout<<"IOV_VALUE_ID "<<myl<<std::endl;
+      std::cout<<"TOKEN "<<mytoken<<std::endl;
+      std::cout<<"TILLTIME "<<mytime<<std::endl;
+    }
     pool::URIParser p;
     p.parse();   
     pool::IFileCatalog lcat;
@@ -143,7 +145,7 @@ int main(int csize, char** cline ) {
     return 1;
   }
   std::cout << "finished" << std::endl;
-  
+  delete context;
   return 0;
 }
 
