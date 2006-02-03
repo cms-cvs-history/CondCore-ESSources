@@ -51,7 +51,7 @@ namespace edmtest
     int channelID=1656;
     //EcalPedestals* myped=const_cast<EcalPedestals*>(pPeds.product());
     const EcalPedestals* myped=pPeds.product();
-    std::map<int,EcalPedestals::Item>::const_iterator it=myped->m_pedestals.find(channelID);
+    std::map<unsigned int,EcalPedestals::Item>::const_iterator it=myped->m_pedestals.find(channelID);
     if( it!=myped->m_pedestals.end() ){
       std::cout << "Ecal channel: " << channelID
                 << "  mean_x1:  " <<it->second.mean_x1 << " rms_x1: " << it->second.rms_x1
