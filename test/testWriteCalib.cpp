@@ -1,103 +1,101 @@
 #include "CondCore/DBCommon/interface/DBWriter.h"
+#include "CondCore/DBCommon/interface/DBSession.h"
+#include "CondCore/DBCommon/interface/Exception.h"
+#include "CondCore/DBCommon/interface/ServiceLoader.h"
+#include "CondCore/DBCommon/interface/ConnectMode.h"
+#include "CondCore/DBCommon/interface/MessageLevel.h"
 #include "CondFormats/EcalObjects/interface/EcalPedestals.h"
 #include "CondFormats/Calibration/interface/Pedestals.h"
 #include "CondCore/IOVService/interface/IOV.h"
 #include "CondCore/MetaDataService/interface/MetaData.h"
 #include "FWCore/Framework/interface/IOVSyncValue.h"
-#include "SealKernel/Service.h"
-#include "POOLCore/POOLContext.h"
-#include "SealKernel/Context.h"
 #include <string>
 #include <map>
 #include <iostream>
 int main(){
-  pool::POOLContext::loadComponent( "SEAL/Services/MessageService" );
-  pool::POOLContext::setMessageVerbosityLevel( seal::Msg::Error );
-  {
-  std::string ecalcontact("sqlite_file:ecalcalib.db");
-  cond::IOV* ecalpediov=new cond::IOV;
-  cond::DBWriter ecalw(ecalcontact);
-  ecalw.startTransaction();
-  EcalPedestals* ped1=new EcalPedestals;
-  int channelId;
-  EcalPedestals::Item item;
-  
-  channelId=1656;
-  item.mean_x1 =0.91;
-  item.rms_x1  =0.17;
-  item.mean_x6 =0.52;
-  item.rms_x6  =0.03;
-  item.mean_x12=0.16;
-  item.rms_x12 =0.05;
-  ped1->m_pedestals.insert(std::make_pair(channelId,item));
-  
-  channelId=1200;
-  item.mean_x1=0.5;
-  item.rms_x1=0.94;
-  item.mean_x6 =0.72;
-  item.rms_x6  =0.07;
-  item.mean_x12=0.87;
-  item.rms_x12 =0.07;
-  ped1->m_pedestals.insert(std::make_pair(channelId,item));
-  
-  std::string ped1tok=ecalw.write<EcalPedestals>(ped1, "EcalPedestals");//pool::Ref takes the ownership of ped1
-  std::cout<<"ecalped1 token "<<ped1tok<<std::endl;
-  //assign IOV
-  unsigned long tillrun=5;
-  ecalpediov->iov.insert(std::make_pair(tillrun,ped1tok));
-  
-  EcalPedestals* ped2=new EcalPedestals; //the user gives up the object ownership upon send it to the writer
-  channelId=1656;
-  item.mean_x1=0.33;
-  item.rms_x1=0.44;
-  item.mean_x6 =0.22;
-  item.rms_x6  =0.11;
-  item.mean_x12=0.39;
-  item.rms_x12 =0.12;
-  ped2->m_pedestals.insert(std::make_pair(channelId,item));
-  
-  channelId=1200;
-  item.mean_x1=0.56;
-  item.rms_x1=0.98;
-  item.mean_x6 =0.83;
-  item.rms_x6  =0.27;
-  item.mean_x12=0.54;
-  item.rms_x12 =0.27;
-  ped2->m_pedestals.insert(std::make_pair(channelId,item));
-  
-  std::string pedtok2=ecalw.write<EcalPedestals>(ped2,"EcalPedestals");
-  std::cout<<"ecalped2 token "<<pedtok2<<std::endl;
-  
-  //assign IOV
-  tillrun=10;
-  ecalpediov->iov.insert(std::make_pair(tillrun,pedtok2));
-  std::string ecalpediovToken=ecalw.write<cond::IOV>(ecalpediov,"IOV");  
-  std::cout<<"ecalped iov token "<<ecalpediovToken<<std::endl;  
-  ecalw.commitTransaction();
-  cond::MetaData ecalmetadata_svc(ecalcontact);
-  ecalmetadata_svc.addMapping("ecalfall_test", ecalpediovToken);
-}
-  { 
-  std::cout<<"start writing general ped"<<std::endl;
-  //write general pedestals
-  std::string pedcontact("sqlite_file:calib.db");
-  cond::DBWriter pedw(pedcontact);
-  pedw.startTransaction();
-  cond::IOV* pediov=new cond::IOV;
-  Pedestals* myped=new Pedestals;
-  Pedestals::Item myitem;
-  myitem.m_mean=1.11;
-  myitem.m_variance=0.11;
-  myped->m_pedestals.push_back(myitem);
-  myitem.m_mean=1.12;
-  myitem.m_variance=0.21;
-  myped->m_pedestals.push_back(myitem);
-  std::string mytok=pedw.write<Pedestals>(myped,"Pedestals");
-  pediov->iov.insert(std::make_pair(10,mytok));
-  std::string pediovToken=pedw.write<cond::IOV>(pediov,"IOV");  
-  pedw.commitTransaction();
-  std::cout<<"about to write meta data"<<std::endl;
-  cond::MetaData metadata_svc(pedcontact);
-  metadata_svc.addMapping("fall_test", pediovToken);
+  cond::ServiceLoader* loader=new cond::ServiceLoader;
+  ::putenv("CORAL_AUTH_USER=me");
+  ::putenv("CORAL_AUTH_PASSWORD=mypass");
+  loader->loadAuthenticationService( cond::Env );
+  loader->loadMessageService( cond::Error );
+  try{
+    cond::DBSession* session1=new cond::DBSession(std::string("sqlite_file:test.db"));
+    session1->setCatalog("file:mycatalog.xml");
+    session1->connect(cond::ReadWriteCreate);
+    cond::DBWriter pwriter(*session1, "Pedestals");
+    cond::DBWriter iovwriter(*session1, "IOV");
+    session1->startUpdateTransaction();
+    cond::IOV* pediov=new cond::IOV;
+    Pedestals* myped=new Pedestals;
+    for(int ichannel=1; ichannel<=5; ++ichannel){
+      Pedestals::Item item;
+        item.m_mean=1.11*ichannel;
+        item.m_variance=1.12*ichannel;
+        myped->m_pedestals.push_back(item);
+    }
+    std::string mytok=pwriter.markWrite<Pedestals>(myped);
+    pediov->iov.insert(std::make_pair(10,mytok));
+    std::string pediovToken=pwriter.markWrite<cond::IOV>(pediov);  
+    iovwriter.markWrite<cond::IOV>(pediov);
+    session1->commit();
+    session1->disconnect();
+    delete session1;
+    cond::MetaData metadata_svc("sqlite_file:test.db",*loader);
+    metadata_svc.connect();
+    metadata_svc.addMapping("mytest", pediovToken);
+    metadata_svc.disconnect();
+  }catch(const cond::Exception& er){
+    std::cout<<er.what()<<std::endl;
+    delete loader;
+    exit(-1);
+  }catch(...){
+    std::cout<<"Funny error"<<std::endl;
+    delete loader;
+    exit(-1);
   }
+  
+  try{
+    cond::DBSession* session2=new cond::DBSession(std::string("sqlite_file:ecalcalib.db"));
+    session2->setCatalog("file:mycatalog.xml");
+    session2->connect(cond::ReadWriteCreate);
+    cond::DBWriter epedwriter(*session2,"EcalPedestals");
+    cond::DBWriter eiovwriter(*session2, "IOV");
+    cond::IOV* epediov=new cond::IOV;
+    EcalPedestals* eped=new EcalPedestals;
+    for(int ichannel=1658; ichannel<=1668; ++ichannel){
+      EcalPedestals::Item item;
+      item.mean_x1 =0.91+ichannel;
+      item.rms_x1  =0.17+ichannel;
+      item.mean_x6 =0.52+ichannel;
+      item.rms_x6  =0.03+ichannel;
+      item.mean_x12=0.16+ichannel;
+      item.rms_x12 =0.05+ichannel;
+      eped->m_pedestals.insert(std::make_pair(ichannel,item));
+    }
+    session2->startUpdateTransaction();
+    std::string epedtok=epedwriter.markWrite<EcalPedestals>(eped);
+    //pool::Ref takes the ownership 
+    std::cout<<"ecalped1 token "<<epedtok<<std::endl;
+    //assign IOV
+    unsigned long tillrun=5;
+    epediov->iov.insert(std::make_pair(tillrun,epedtok));
+    std::string epediovtok=eiovwriter.markWrite<cond::IOV>(epediov); 
+    std::cout<<"ecalped iov token "<<epediovtok<<std::endl;  
+    session2->commit();
+    session2->disconnect();
+    delete session2;
+    cond::MetaData ecalmetadata_svc(std::string("sqlite_file:ecalcalib.db"),*loader);
+    ecalmetadata_svc.connect();
+    ecalmetadata_svc.addMapping("ecaltest", epediovtok);
+    ecalmetadata_svc.disconnect();
+  }catch(const cond::Exception& er){
+    std::cout<<er.what()<<std::endl;
+    delete loader;
+    exit(-1);
+  }catch(...){
+    std::cout<<"Funny error"<<std::endl;
+    delete loader;
+    exit(-1);
+  }
+  delete loader;
 }
