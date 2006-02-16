@@ -10,8 +10,6 @@
 <use name=CondFormats/DataRecord>
 <use name=FWCore/Services>	
 <bin file=testWriteCalib.cpp></bin>
-<bin file=testReadCalib.cpp></bin>
-<bin file=testReadAllCalib.cpp></bin>
 <bin file=constructToken.cpp></bin>
 <library file=stubs/TrackerCalibAnalyzer.cc name=TrackerCalibAnalyzer>
         <flags SEAL_PLUGIN_NAME="TrackerCalibAnalyzer">
