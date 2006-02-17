@@ -35,8 +35,7 @@ int main(){
     }
     std::string mytok=pwriter.markWrite<Pedestals>(myped);
     pediov->iov.insert(std::make_pair(10,mytok));
-    std::string pediovToken=pwriter.markWrite<cond::IOV>(pediov);  
-    iovwriter.markWrite<cond::IOV>(pediov);
+    std::string pediovToken=iovwriter.markWrite<cond::IOV>(pediov);  
     session1->commit();
     session1->disconnect();
     delete session1;
