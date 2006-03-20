@@ -37,10 +37,8 @@ int main(){
       std::string mytok=pwriter.markWrite<Pedestals>(myped);
       if(i<2){
 	pediov->iov.insert(std::make_pair(5+i,mytok)); 
-	//the first two ped valid until run 5
       }else{
 	pediov->iov.insert(std::make_pair(10+i,mytok));
-	//the next two ped valid from run 6 until run 10
       }
     }
     std::string pediovToken=iovwriter.markWrite<cond::IOV>(pediov);  
