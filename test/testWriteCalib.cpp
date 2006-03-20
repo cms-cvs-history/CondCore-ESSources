@@ -36,10 +36,10 @@ int main(){
       }
       std::string mytok=pwriter.markWrite<Pedestals>(myped);
       if(i<2){
-	pediov->iov.insert(std::make_pair(5,mytok)); 
+	pediov->iov.insert(std::make_pair(5+i,mytok)); 
 	//the first two ped valid until run 5
       }else{
-	pediov->iov.insert(std::make_pair(10,mytok));
+	pediov->iov.insert(std::make_pair(10+i,mytok));
 	//the next two ped valid from run 6 until run 10
       }
     }
@@ -85,8 +85,8 @@ int main(){
       //pool::Ref takes the ownership 
       std::cout<<"ecalped token "<<epedtok<<std::endl;
       //assign IOV
-      if(i<1){
-	epediov->iov.insert(std::make_pair(2,epedtok));
+      if(i<=1){
+	epediov->iov.insert(std::make_pair(2+i,epedtok));
       }else{
 	//valid forever
 	epediov->iov.insert(std::make_pair(edm::IOVSyncValue::endOfTime().eventID().run(),epedtok));
