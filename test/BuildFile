@@ -10,7 +10,6 @@
 <use name=CondFormats/DataRecord>
 <use name=FWCore/Services>	
 <bin file=testWriteCalib.cpp></bin>
-<bin file=constructToken.cpp></bin>
 <library file=stubs/EcalPedestalsAnalyzer.cc name=EcalPedestalsAnalyzer>
         <flags SEAL_PLUGIN_NAME="EcalPedestalsAnalyzer">
 </library>
