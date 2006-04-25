@@ -26,7 +26,9 @@ int main(){
     cond::DBWriter iovwriter(*session1, "IOV");
     session1->startUpdateTransaction();
     cond::IOV* pediov=new cond::IOV;
+    unsigned long long infTime=edm::IOVSyncValue::endOfTime().time().value();
     for( int i=0; i<3; ++i){  //writing 4 peds
+      unsigned long long currentTime=(i+1)*10000000; //10milsec
       Pedestals* myped=new Pedestals;
       for(int ichannel=1; ichannel<=5; ++ichannel){
 	Pedestals::Item item;
@@ -36,9 +38,9 @@ int main(){
       }
       std::string mytok=pwriter.markWrite<Pedestals>(myped);
       if(i<2){
-	pediov->iov.insert(std::make_pair(5+i,mytok)); 
-      }else{
-	pediov->iov.insert(std::make_pair(10+i,mytok));
+	pediov->iov.insert(std::make_pair(currentTime,mytok)); 
+      }else{ //the last one valid forever
+	pediov->iov.insert(std::make_pair(infTime,mytok));
       }
     }
     std::string pediovToken=iovwriter.markWrite<cond::IOV>(pediov);  
@@ -67,7 +69,8 @@ int main(){
     cond::DBWriter eiovwriter(*session2, "IOV");
     cond::IOV* epediov=new cond::IOV;
     session2->startUpdateTransaction();
-    for(int i=0; i<2; ++i){ //writing 2 ecalped
+    for(int i=0; i<3; ++i){ //writing 3 ecalped
+      unsigned long long currentTime=(i+1)*5000000; //5milsec
       EcalPedestals* eped=new EcalPedestals;
       for(int ichannel=1658; ichannel<=1668; ++ichannel){
 	EcalPedestals::Item item;
@@ -83,11 +86,11 @@ int main(){
       //pool::Ref takes the ownership 
       std::cout<<"ecalped token "<<epedtok<<std::endl;
       //assign IOV
-      if(i<1){
-	epediov->iov.insert(std::make_pair(2+i,epedtok));
+      if(i<2){
+	epediov->iov.insert(std::make_pair(currentTime,epedtok));
       }else{
-	//valid forever
-	epediov->iov.insert(std::make_pair(edm::IOVSyncValue::endOfTime().eventID().run(),epedtok));
+	//the last one valid forever
+	epediov->iov.insert(std::make_pair(edm::IOVSyncValue::endOfTime().time().value(),epedtok));
       }
     }
     std::string epediovtok=eiovwriter.markWrite<cond::IOV>(epediov); 
