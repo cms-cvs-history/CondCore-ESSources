@@ -2,6 +2,7 @@
 <use name=FWCore/ParameterSet>
 <use name=CondFormats/Calibration>
 <use name=CondFormats/EcalObjects>
+<use name=CondFormats/CSCObjects>
 <use name=CondCore/DBCommon>
 <use name=CondCore/IOVService>
 <use name=CondCore/MetaDataService>
@@ -10,8 +11,12 @@
 <use name=CondFormats/DataRecord>
 <use name=FWCore/Services>	
 <bin file=testWriteCalib.cpp></bin>
+<bin file=testWriteCSCPedestals.cpp></bin>
 <bin file=testWriteCalib-timestamp.cpp></bin>
 <bin file=SiStripTest/testwritemySiStripNoiseCalib.cpp></bin>
 <library file=stubs/EcalPedestalsAnalyzer.cc name=EcalPedestalsAnalyzer>
         <flags SEAL_PLUGIN_NAME="EcalPedestalsAnalyzer">
+</library>
+<library file=stubs/CSCPedestalReadAnalyzer.cc name=CSCPedestalReadAnalyzer>
+        <flags SEAL_PLUGIN_NAME="CSCPedestalReadAnalyzer">
 </library>

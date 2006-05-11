@@ -10,5 +10,12 @@
   <parameter name="user" value="" />
   <parameter name="password" value="" />
 </connection>
-
+<connection name="sqlite_file:csctest.db">
+  <parameter name="user" value="" />
+  <parameter name="password" value="" />
+</connection>
+<connection name="oracle://TEST1/POOL_TEST">
+  <parameter name="user" value="POOL_TEST" />
+  <parameter name="password" value="pool_test" />
+</connection>
 </connectionlist>
