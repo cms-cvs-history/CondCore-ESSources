@@ -5,10 +5,8 @@
 <use name=CondCore/DBCommon>
 <use name=CondCore/IOVService>
 <use name=CondCore/MetaDataService>
-<use name=CondCore/ESSources>
 <use name=FWCore/Framework>	
 <use name=CondFormats/DataRecord>
-<use name=FWCore/Services>	
 <bin file=testWriteCalib.cpp></bin>
 <bin file=testWriteCalib-timestamp.cpp></bin>
 <bin file=SiStripTest/testwritemySiStripNoiseCalib.cpp></bin>
