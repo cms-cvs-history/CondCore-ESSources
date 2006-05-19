@@ -48,7 +48,7 @@ namespace edmtest
 
     //call tracker code
     //
-    int channelID=1656;
+    int channelID=1665;
     //EcalPedestals* myped=const_cast<EcalPedestals*>(pPeds.product());
     const EcalPedestals* myped=pPeds.product();
     std::map<unsigned int,EcalPedestals::Item>::const_iterator it=myped->m_pedestals.find(channelID);
