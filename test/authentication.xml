@@ -11,4 +11,9 @@
   <parameter name="password" value="" />
 </connection>
 
+<connection name="oracle://devdb10/CMS_XIEZHEN_DEV">
+  <parameter name="user" value="" />
+  <parameter name="password" value="" />
+</connection>
+
 </connectionlist>
