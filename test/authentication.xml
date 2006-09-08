@@ -10,7 +10,7 @@
   <parameter name="password" value="" />
 </connection>
 
-<connection name="sqlite_file:calib.db">
+<connection name="sqlite_file:test.db">
   <parameter name="user" value="" />
   <parameter name="password" value="" />
 </connection>

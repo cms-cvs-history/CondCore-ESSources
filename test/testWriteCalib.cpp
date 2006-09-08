@@ -14,16 +14,14 @@
 #include <iostream>
 int main(){
   cond::ServiceLoader* loader=new cond::ServiceLoader;
-  ::putenv("CORAL_AUTH_USER=me");
-  ::putenv("CORAL_AUTH_PASSWORD=mypass");
-  loader->loadAuthenticationService( cond::Env );
+  loader->loadAuthenticationService( cond::XML );
   loader->loadMessageService( cond::Error );
   try{
     cond::DBSession* session1=new cond::DBSession(std::string("sqlite_file:test.db"));
     session1->setCatalog("file:mycatalog.xml");
     session1->connect(cond::ReadWriteCreate);
     cond::DBWriter pwriter(*session1, "Pedestals");
-    cond::DBWriter iovwriter(*session1, "IOV");
+    cond::DBWriter iovwriter(*session1, "cond::IOV");
     session1->startUpdateTransaction();
     cond::IOV* pediov=new cond::IOV;
     for( int i=0; i<3; ++i){  //writing 4 peds
@@ -64,7 +62,7 @@ int main(){
     session2->setCatalog("file:mycatalog.xml");
     session2->connect(cond::ReadWriteCreate);
     cond::DBWriter epedwriter(*session2,"EcalPedestals");
-    cond::DBWriter eiovwriter(*session2, "IOV");
+    cond::DBWriter eiovwriter(*session2, "cond::IOV");
     cond::IOV* epediov=new cond::IOV;
     session2->startUpdateTransaction();
     for(int i=0; i<2; ++i){ //writing 2 ecalped
