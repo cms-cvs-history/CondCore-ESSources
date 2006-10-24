@@ -60,5 +60,5 @@ namespace edmtest
                 << std::endl;
     }
   }
-  DEFINE_FWK_MODULE(EcalPedestalsAnalyzer)
+  DEFINE_FWK_MODULE(EcalPedestalsAnalyzer);
 }
