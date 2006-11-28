@@ -1,7 +1,7 @@
 #ifndef CondCore_ESSources_PoolDBESSource_h
 #define CondCore_ESSources_PoolDBESSource_h
 // system include files
-#include <memory>
+//#include <memory>
 #include <string>
 #include <map>
 // user include files

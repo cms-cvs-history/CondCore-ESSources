@@ -7,9 +7,7 @@
 <use name=CondCore/MetaDataService>
 <use name=FWCore/Framework>	
 <use name=CondFormats/DataRecord>
-<bin file=testWriteCalib.cpp></bin>
-<bin file=testWriteCalib-timestamp.cpp></bin>
-<bin file=SiStripTest/testwritemySiStripNoiseCalib.cpp name=testwritemySiStripNoiseCalib></bin>
+<bin file=testWriteCondData.cpp></bin>
 <library file=stubs/EcalPedestalsAnalyzer.cc name=EcalPedestalsAnalyzer>
         <flags SEAL_PLUGIN_NAME="EcalPedestalsAnalyzer">
 </library>
