@@ -1,7 +1,7 @@
 // system include files
 #include "boost/shared_ptr.hpp"
 // user include files
-#include "CondCore/ESSources/interface/PoolDBESSource.h"
+#include "PoolDBESSource.h"
 #include "CondCore/DBCommon/interface/DBSession.h"
 #include "CondCore/DBCommon/interface/Exception.h"
 #include "CondCore/DBCommon/interface/ConnectMode.h"
