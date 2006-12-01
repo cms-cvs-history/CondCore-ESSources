@@ -227,7 +227,7 @@ cond::PoolDBESSource::setIntervalFor( const edm::eventsetup::EventSetupRecordKey
   cond::PoolStorageManager& pooldb=m_session->poolStorageManager(m_catalog);
   cond::IOVService iovservice(pooldb);
   cond::IOVIterator* iovIterator= iovservice.newIOVIterator(iovToken);
-  pooldb.connect(cond::ReadOnly);
+  pooldb.connect();
   pooldb.startTransaction(true);
   std::string payloadToken;
   cond::Time_t abtime,starttime;

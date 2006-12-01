@@ -19,7 +19,7 @@ int main(){
     session->sessionConfiguration().setMessageLevel(cond::Error);
     session->open(true);
     cond::PoolStorageManager& pooldb=session->poolStorageManager("file:mycatalog.xml");
-    pooldb.connect(cond::ReadWriteCreate);
+    pooldb.connect();
     cond::IOVService iovmanager(pooldb);
     cond::IOVEditor* ioveditor=iovmanager.newIOVEditor();
     pooldb.startTransaction(false);
@@ -34,7 +34,7 @@ int main(){
       cond::Ref<Pedestals> myref(pooldb,myped);
       myref.markWrite("PedestalsRcd");
       std::string payloadToken=myref.token();
-      ioveditor->insert(payloadToken,cond::Time_t(2+2*i));
+      ioveditor->insert(cond::Time_t(2+2*i),payloadToken);
     }
     //last one
     Pedestals* myped=new Pedestals;
@@ -47,7 +47,7 @@ int main(){
     cond::Ref<Pedestals> myref(pooldb,myped);
     myref.markWrite("PedestalsRcd");
     std::string payloadToken=myref.token();
-    ioveditor->insert(payloadToken,9999);
+    ioveditor->insert(9999,payloadToken);
     std::string iovtoken=ioveditor->token();
     std::cout<<"iov token "<<iovtoken<<std::endl;
     pooldb.commit();
