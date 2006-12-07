@@ -1,13 +1,11 @@
-<use name=clhep>
 <use name=FWCore/ParameterSet>
 <use name=CondFormats/Calibration>
-<use name=CondFormats/EcalObjects>
 <use name=CondCore/DBCommon>
 <use name=CondCore/IOVService>
 <use name=CondCore/MetaDataService>
 <use name=FWCore/Framework>	
 <use name=CondFormats/DataRecord>
 <bin file=testWriteCondData.cpp></bin>
-<library file=stubs/EcalPedestalsAnalyzer.cc name=EcalPedestalsAnalyzer>
-        <flags SEAL_PLUGIN_NAME="EcalPedestalsAnalyzer">
+<library file=stubs/PedestalsAnalyzer.cc name=PedestalsAnalyzer>
+        <flags SEAL_PLUGIN_NAME="PedestalsAnalyzer">
 </library>
