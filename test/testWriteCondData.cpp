@@ -27,8 +27,8 @@ int main(){
       Pedestals* myped=new Pedestals;
       for(int ichannel=1; ichannel<=5; ++ichannel){
 	Pedestals::Item item;
-        item.m_mean=1.11*ichannel;
-        item.m_variance=1.12*ichannel;
+        item.m_mean=1.11*ichannel+i;
+        item.m_variance=1.12*ichannel+i*2;
         myped->m_pedestals.push_back(item);
       }
       cond::Ref<Pedestals> myref(pooldb,myped);
