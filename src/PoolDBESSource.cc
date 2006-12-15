@@ -214,29 +214,29 @@ PoolDBESSource::~PoolDBESSource()
 void 
 PoolDBESSource::setIntervalFor( const edm::eventsetup::EventSetupRecordKey& iKey, const edm::IOVSyncValue& iTime, edm::ValidityInterval& oInterval ) {
   LogDebug ("")<<"setIntervalFor "<<iKey.name();
-  std::cout<<"PoolDBESSource::setIntervalFor "<< iKey.name() <<" at time "<<iTime.eventID().run()<<std::endl;
+  //std::cout<<"PoolDBESSource::setIntervalFor "<< iKey.name() <<" at time "<<iTime.eventID().run()<<std::endl;
   RecordToTypes::iterator itRec = m_recordToTypes.find( iKey.name() );
-  std::cout<<"recordToTypes size "<<m_recordToTypes.size()<<std::endl;
-  std::cout<<"setIntervalFor "<<iKey.name()<<std::endl;
+  //std::cout<<"recordToTypes size "<<m_recordToTypes.size()<<std::endl;
+  //std::cout<<"setIntervalFor "<<iKey.name()<<std::endl;
   if( itRec == m_recordToTypes.end() ) {
     //no valid record
     LogDebug ("")<<"no valid record ";
-    std::cout<<"no valid record "<<std::endl;
+    //std::cout<<"no valid record "<<std::endl;
     oInterval = edm::ValidityInterval::invalidInterval();
     return;
   }
-  std::cout<<"recordToIOV size "<<m_recordToIOV.size()<<std::endl;
+  //std::cout<<"recordToIOV size "<<m_recordToIOV.size()<<std::endl;
   RecordToIOV::iterator itIOV = m_recordToIOV.find( iKey.name() );
   if( itIOV == m_recordToIOV.end() ){
     LogDebug ("")<<"no valid IOV found for record "<<iKey.name();
-    std::cout<<"no valid IOV found for record "<<iKey.name();
+    //std::cout<<"no valid IOV found for record "<<iKey.name();
     oInterval = edm::ValidityInterval::invalidInterval();
     return;
   }
   std::string iovToken=itIOV->second;
   std::string payloadToken;
-  cond::Time_t abtime,starttime;
-  cond::Time_t beginOftime,endOftime;
+  cond::Time_t abtime;//,starttime;
+  //cond::Time_t beginOftime,endOftime;
   std::ostringstream os;
   if( m_timetype == "timestamp" ){
     abtime=(cond::Time_t)iTime.time().value();
@@ -279,14 +279,14 @@ PoolDBESSource::setIntervalFor( const edm::eventsetup::EventSetupRecordKey& iKey
     stop=edm::IOVSyncValue( edm::Timestamp(validity.second) );
     LogDebug ("")<<" set start time "<<start.time().value()
 		 <<" ; set stop time "<<stop.time().value();
-    std::cout<<" set start time "<<start.time().value()
-	     <<" ; set stop time "<<stop.time().value();
+    //std::cout<<" set start time "<<start.time().value()
+    //	     <<" ; set stop time "<<stop.time().value();
   }else{
     stop=edm::IOVSyncValue( edm::EventID(validity.second,0) );
     LogDebug ("")<<" set start run "<<start.eventID().run()
 		 <<" ; set stop run "<<stop.eventID().run();
-    std::cout<<" set start run "<<start.eventID().run()
-		 <<" ; set stop run "<<stop.eventID().run();
+    //std::cout<<" set start run "<<start.eventID().run()
+    //		 <<" ; set stop run "<<stop.eventID().run();
   }
   oInterval = edm::ValidityInterval( start, stop );
   //oInterval = edm::ValidityInterval(edm::IOVSyncValue::beginOfTime(), edm::IOVSyncValue::endOfTime());
@@ -372,5 +372,5 @@ void PoolDBESSource::tagToToken( const std::vector< std::pair < std::string, std
 
 //define this as a plug-in
 //using namespace cond;
-DEFINE_FWK_EVENTSETUP_SOURCE(PoolDBESSource)
+DEFINE_FWK_EVENTSETUP_SOURCE(PoolDBESSource);
   
