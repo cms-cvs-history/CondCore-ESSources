@@ -93,7 +93,6 @@ fillRecordToTypeMap(std::multimap<std::string, std::string>& oToFill){
 PoolDBESSource::PoolDBESSource( const edm::ParameterSet& iConfig ) :
   m_timetype(iConfig.getParameter<std::string>("timetype") ),
   m_session( 0 )
-  // m_tagTranslated( false )
 {		
   //std::cout<<"PoolDBESSource::PoolDBESSource"<<std::endl;
   /*parameter set parsing and pool environment setting
@@ -194,7 +193,11 @@ PoolDBESSource::PoolDBESSource( const edm::ParameterSet& iConfig ) :
       }
     }
   }
-  m_iovservice=new cond::IOVService(*m_pooldb);
+  if(m_timetype=="timestamp"){
+    m_iovservice=new cond::IOVService(*m_pooldb,cond::timestamp);
+  }else{
+    m_iovservice=new cond::IOVService(*m_pooldb,cond::runnumber);
+  }
   m_session->open(true);
   this->tagToToken(recordToTag);
 }
@@ -202,8 +205,8 @@ PoolDBESSource::~PoolDBESSource()
 {
   // std::cout<<"PoolDBESSource::~PoolDBESSource"<<std::endl;
   if(m_session->isActive()){
-    m_session->close();
     m_pooldb->disconnect();
+    m_session->close();
   }
   delete m_iovservice;
   delete m_session;
@@ -213,14 +216,12 @@ PoolDBESSource::~PoolDBESSource()
 //
 void 
 PoolDBESSource::setIntervalFor( const edm::eventsetup::EventSetupRecordKey& iKey, const edm::IOVSyncValue& iTime, edm::ValidityInterval& oInterval ) {
-  LogDebug ("")<<"setIntervalFor "<<iKey.name();
+  LogDebug ("PoolDBESSource")<<iKey.name();
   //std::cout<<"PoolDBESSource::setIntervalFor "<< iKey.name() <<" at time "<<iTime.eventID().run()<<std::endl;
   RecordToTypes::iterator itRec = m_recordToTypes.find( iKey.name() );
-  //std::cout<<"recordToTypes size "<<m_recordToTypes.size()<<std::endl;
-  //std::cout<<"setIntervalFor "<<iKey.name()<<std::endl;
   if( itRec == m_recordToTypes.end() ) {
     //no valid record
-    LogDebug ("")<<"no valid record ";
+    LogDebug ("PoolDBESSource")<<"no valid record ";
     //std::cout<<"no valid record "<<std::endl;
     oInterval = edm::ValidityInterval::invalidInterval();
     return;
@@ -228,22 +229,18 @@ PoolDBESSource::setIntervalFor( const edm::eventsetup::EventSetupRecordKey& iKey
   //std::cout<<"recordToIOV size "<<m_recordToIOV.size()<<std::endl;
   RecordToIOV::iterator itIOV = m_recordToIOV.find( iKey.name() );
   if( itIOV == m_recordToIOV.end() ){
-    LogDebug ("")<<"no valid IOV found for record "<<iKey.name();
-    //std::cout<<"no valid IOV found for record "<<iKey.name();
+    LogDebug ("PoolDBESSource")<<"no valid IOV found for record "<<iKey.name();
     oInterval = edm::ValidityInterval::invalidInterval();
     return;
   }
   std::string iovToken=itIOV->second;
   std::string payloadToken;
-  cond::Time_t abtime;//,starttime;
-  //cond::Time_t beginOftime,endOftime;
+  cond::Time_t abtime;
   std::ostringstream os;
   if( m_timetype == "timestamp" ){
     abtime=(cond::Time_t)iTime.time().value();
-    //endOftime=(cond::Time_t)edm::IOVSyncValue::endOfTime().time().value();
   }else{
     abtime=(cond::Time_t)iTime.eventID().run();
-    //endOftime=(cond::Time_t)edm::IOVSyncValue::endOfTime().eventID().run();
   }
   //valid time check
   //check if current run exceeds iov upperbound
@@ -252,44 +249,28 @@ PoolDBESSource::setIntervalFor( const edm::eventsetup::EventSetupRecordKey& iKey
     os<<abtime;
     throw cond::noDataForRequiredTimeException("PoolDBESSource::setIntervalFor",iKey.name(),os.str());
   }
-  //if( m_timetype == "timestamp" ){
-    //beginOftime=edm::IOVSyncValue::beginOfTime().time().value();
-    //starttime=beginOftime;
-  //}else{
-    //beginOftime=(cond::Time_t)edm::IOVSyncValue::beginOfTime().eventID().run();
-    //starttime=beginOftime;
-  //}
   std::pair<cond::Time_t, cond::Time_t> validity=m_iovservice->validity(iovToken,abtime);
-  //std::cout<<"setting validity "<<validity.first<<" "<<validity.second<<std::endl;
   payloadToken=m_iovservice->payloadToken(iovToken,abtime);
   m_pooldb->commit();
-  //std::cout<<"payload token "<<payloadToken<<std::endl;
   edm::IOVSyncValue start;
   if( m_timetype == "timestamp" ){
     start=edm::IOVSyncValue( edm::Timestamp(validity.first) );
   }else{
-    if(validity.first!=0){
-      start=edm::IOVSyncValue( edm::EventID(validity.first,0) );
-    }else{
-      start=edm::IOVSyncValue( edm::EventID(validity.first,0) );
-    }
+    start=edm::IOVSyncValue( edm::EventID(validity.first,0) );
   }
   edm::IOVSyncValue stop;
   if( m_timetype == "timestamp" ){
     stop=edm::IOVSyncValue( edm::Timestamp(validity.second) );
-    LogDebug ("")<<" set start time "<<start.time().value()
-		 <<" ; set stop time "<<stop.time().value();
-    //std::cout<<" set start time "<<start.time().value()
-    //	     <<" ; set stop time "<<stop.time().value();
+    LogDebug ("PoolDBESSource")
+      <<" set start time "<<start.time().value()
+      <<" ; set stop time "<<stop.time().value();
   }else{
     stop=edm::IOVSyncValue( edm::EventID(validity.second,0) );
-    LogDebug ("")<<" set start run "<<start.eventID().run()
-		 <<" ; set stop run "<<stop.eventID().run();
-    //std::cout<<" set start run "<<start.eventID().run()
-    //		 <<" ; set stop run "<<stop.eventID().run();
+    LogDebug ("PoolDBESSource")
+      <<" set start run "<<start.eventID().run()
+      <<" ; set stop run "<<stop.eventID().run();
   }
   oInterval = edm::ValidityInterval( start, stop );
-  //oInterval = edm::ValidityInterval(edm::IOVSyncValue::beginOfTime(), edm::IOVSyncValue::endOfTime());
   //std::cout<<"setting itRec->first "<<itRec->first<<std::endl;
   //std::cout<<"setting itRec->second "<<itRec->second<<std::endl;
   //std::cout<<"payloadToken "<< payloadToken<<std::endl;
@@ -300,11 +281,10 @@ PoolDBESSource::setIntervalFor( const edm::eventsetup::EventSetupRecordKey& iKey
 void 
 PoolDBESSource::registerProxies(const edm::eventsetup::EventSetupRecordKey& iRecordKey , KeyedProxies& aProxyList) 
 {
-  LogDebug ("")<<"registerProxies";
-  //std::cout<<"PoolDBESSource::registerProxies"<<std::endl;
+  LogDebug ("PoolDBESSource ")<<"registerProxies";
   using namespace edm;
   using namespace edm::eventsetup;
-  using namespace std;
+  //using namespace std;
   //std::cout <<string("registering Proxies for ") + iRecordKey.name() << endl;
   //For each data type in this Record, create the proxy by dynamically loading it
   std::pair< RecordToTypes::iterator,RecordToTypes::iterator > typeItrs = m_recordToTypes.equal_range( iRecordKey.name() );
@@ -320,13 +300,8 @@ PoolDBESSource::registerProxies(const edm::eventsetup::EventSetupRecordKey& iRec
       if(0 != proxy.get()) {
 	eventsetup::DataKey key( type, "");
 	aProxyList.push_back(KeyedProxies::value_type(key,proxy));
-      }//else{
-      // throw cond::Exception("no valid payload found");
-      //}
-    }else{
-      //std::cout<<"IS default type "<<std::endl;
+      }
     }
-    //cout <<endl;
   }
   m_pooldb->connect();
 }
@@ -335,7 +310,7 @@ void
 PoolDBESSource::newInterval(const edm::eventsetup::EventSetupRecordKey& iRecordType,const edm::ValidityInterval& iInterval) 
 {
   //std::cout<<"PoolDBESSource::newInterval"<<std::endl;
-  LogDebug ("")<<"newInterval";
+  LogDebug ("PoolDBESSource")<<"newInterval";
   invalidateProxies(iRecordType);
 }
 
@@ -343,9 +318,6 @@ void PoolDBESSource::tagToToken( const std::vector< std::pair < std::string, std
   //std::cout<<"tag to token"<<std::endl;
   try{
     if( recordToTag.size()==0 ) return;
-    /*if( !m_session->isActive() ){
-     * m_session->open(true);
-     }*/
     cond::RelationalStorageManager& coraldb=m_session->relationalStorageManager();
     cond::MetaData metadata(coraldb);
     coraldb.connect(cond::ReadOnly);
@@ -365,9 +337,7 @@ void PoolDBESSource::tagToToken( const std::vector< std::pair < std::string, std
   }catch(const cms::Exception&e ){
     throw e;
   }
-  //m_tagTranslated=true;
 }
-
 // ------------ method called to produce the data  ------------
 
 //define this as a plug-in
