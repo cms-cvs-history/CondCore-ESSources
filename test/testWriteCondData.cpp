@@ -15,10 +15,10 @@
 #include "CondFormats/Calibration/interface/Pedestals.h"
 int main(){
   try{
-    cond::DBSession* session=new cond::DBSession("sqlite_file:test.db");
+    cond::DBSession* session=new cond::DBSession;
     session->sessionConfiguration().setMessageLevel(cond::Error);
-    session->open(true);
-    cond::PoolStorageManager& pooldb=session->poolStorageManager("file:mycatalog.xml");
+    session->open();
+    cond::PoolStorageManager pooldb("sqlite_file:test.db","file:mycatalog.xml",session);
     pooldb.connect();
     cond::IOVService iovmanager(pooldb);
     cond::IOVEditor* ioveditor=iovmanager.newIOVEditor();
@@ -53,7 +53,7 @@ int main(){
     pooldb.commit();
     pooldb.disconnect();
     delete ioveditor;
-    cond::RelationalStorageManager& coraldb=session->relationalStorageManager();
+    cond::RelationalStorageManager coraldb("sqlite_file:test.db",session);
     coraldb.connect(cond::ReadWriteCreate);
     coraldb.startTransaction(false);
     cond::MetaData metadata(coraldb);

@@ -115,8 +115,7 @@ PoolDBESSource::PoolDBESSource( const edm::ParameterSet& iConfig ) :
   }else{
     mycatalog=iConfig.getUntrackedParameter<std::string>("catalog","");
   }
-  m_session=new cond::DBSession(connect);
-  m_pooldb=&(m_session->poolStorageManager(mycatalog));
+  m_session=new cond::DBSession(true);
   edm::ParameterSet connectionPset = iConfig.getParameter<edm::ParameterSet>("DBParameters"); 
   cond::ConfigSessionFromParameterSet configConnection(*m_session,connectionPset);
   //std::cout<<"PoolDBESSource::PoolDBESSource"<<std::endl;
@@ -193,12 +192,14 @@ PoolDBESSource::PoolDBESSource( const edm::ParameterSet& iConfig ) :
       }
     }
   }
+  m_con=connect;
+  cond::PoolStorageManager* m_pooldb=new cond::PoolStorageManager(m_con,mycatalog,m_session);
   if(m_timetype=="timestamp"){
     m_iovservice=new cond::IOVService(*m_pooldb,cond::timestamp);
   }else{
     m_iovservice=new cond::IOVService(*m_pooldb,cond::runnumber);
   }
-  m_session->open(true);
+  m_session->open();
   this->tagToToken(recordToTag);
 }
 PoolDBESSource::~PoolDBESSource()
@@ -209,6 +210,7 @@ PoolDBESSource::~PoolDBESSource()
     m_session->close();
   }
   delete m_iovservice;
+  delete m_pooldb;
   delete m_session;
 }
 //
@@ -318,7 +320,7 @@ void PoolDBESSource::tagToToken( const std::vector< std::pair < std::string, std
   //std::cout<<"tag to token"<<std::endl;
   try{
     if( recordToTag.size()==0 ) return;
-    cond::RelationalStorageManager& coraldb=m_session->relationalStorageManager();
+    cond::RelationalStorageManager coraldb(m_con,m_session);
     cond::MetaData metadata(coraldb);
     coraldb.connect(cond::ReadOnly);
     coraldb.startTransaction(true);

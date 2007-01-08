@@ -10,12 +10,4 @@
 <flags SEAL_PLUGIN_NAME="CondCoreESSources">
 <export>
    <lib name=CondCoreESSources>
-   <use name=FWCore/Framework>
-   <use name=Foundation/PluginManager>
-   <use name=FWCore/ParameterSet>
-   <use name=CondCore/PluginSystem>
-   <use name=CondCore/DBCommon>
-   <use name=CondCore/IOVService>	
-   <use name=CondCore/MetaDataService>
-   <use name=DataSvc>
 </export>

@@ -35,7 +35,7 @@ class PoolDBESSource : public edm::eventsetup::DataProxyProvider,public edm::Eve
   typedef std::map<proxyName, tokenType > ProxyToToken;
   ProxyToToken m_proxyToToken;
   typedef ProxyToToken::iterator pProxyToToken;
-  //std::string m_con;
+  std::string m_con;
   typedef std::map<std::string, std::string > RecordToIOV;
   RecordToIOV m_recordToIOV;
   //std::vector< std::pair < std::string, std::string> > m_recordToTag;
