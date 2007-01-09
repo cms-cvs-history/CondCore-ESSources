@@ -13,7 +13,6 @@
 #include "FWCore/Framework/interface/DataProxy.h"
 #include "CondCore/PluginSystem/interface/ProxyFactory.h"
 #include "CondCore/IOVService/interface/IOVService.h"
-//#include "CondCore/IOVService/interface/IOVIterator.h"
 #include "CondCore/MetaDataService/interface/MetaData.h"
 #include "POOLCore/Exception.h"
 #include "FWCore/Framework/interface/SiteLocalConfig.h"
@@ -193,13 +192,14 @@ PoolDBESSource::PoolDBESSource( const edm::ParameterSet& iConfig ) :
     }
   }
   m_con=connect;
-  cond::PoolStorageManager* m_pooldb=new cond::PoolStorageManager(m_con,mycatalog,m_session);
+  std::cout<<m_con<<std::endl;
+  m_pooldb=new cond::PoolStorageManager(m_con,mycatalog,m_session);
+  m_session->open();
   if(m_timetype=="timestamp"){
     m_iovservice=new cond::IOVService(*m_pooldb,cond::timestamp);
   }else{
     m_iovservice=new cond::IOVService(*m_pooldb,cond::runnumber);
   }
-  m_session->open();
   this->tagToToken(recordToTag);
 }
 PoolDBESSource::~PoolDBESSource()
@@ -283,11 +283,11 @@ PoolDBESSource::setIntervalFor( const edm::eventsetup::EventSetupRecordKey& iKey
 void 
 PoolDBESSource::registerProxies(const edm::eventsetup::EventSetupRecordKey& iRecordKey , KeyedProxies& aProxyList) 
 {
-  LogDebug ("PoolDBESSource ")<<"registerProxies";
+  //LogDebug ("PoolDBESSource ")<<"registerProxies";
   using namespace edm;
   using namespace edm::eventsetup;
   //using namespace std;
-  //std::cout <<string("registering Proxies for ") + iRecordKey.name() << endl;
+  //std::cout <<"registering Proxies for "<< iRecordKey.name() << std::endl;
   //For each data type in this Record, create the proxy by dynamically loading it
   std::pair< RecordToTypes::iterator,RecordToTypes::iterator > typeItrs = m_recordToTypes.equal_range( iRecordKey.name() );
   //loop over types in the same record
