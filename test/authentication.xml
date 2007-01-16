@@ -1,0 +1,23 @@
+<?xml version="1.0" ?>
+<connectionlist>
+<connection name="frontier://cms_conditions_data/CMS_COND_ECAL">
+  <parameter name="user" value="" />
+  <parameter name="password" value="" />
+</connection>
+
+<connection name="sqlite_file:ecalcalib.db">
+  <parameter name="user" value="" />
+  <parameter name="password" value="" />
+</connection>
+
+<connection name="sqlite_file:test.db">
+  <parameter name="user" value="" />
+  <parameter name="password" value="" />
+</connection>
+
+<connection name="oracle://devdb10/CMS_XIEZHEN_DEV">
+  <parameter name="user" value="" />
+  <parameter name="password" value="" />
+</connection>
+
+</connectionlist>
