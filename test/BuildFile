@@ -7,5 +7,5 @@
 <use name=CondFormats/DataRecord>
 <bin file=testWriteCondData.cpp></bin>
 <library file=stubs/PedestalsAnalyzer.cc name=PedestalsAnalyzer>
-        <flags SEAL_PLUGIN_NAME="PedestalsAnalyzer">
+        <flags EDM_PLUGIN=1>
 </library>
