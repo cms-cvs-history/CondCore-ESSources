@@ -1,23 +1,11 @@
 <?xml version="1.0" ?>
 <connectionlist>
-<connection name="frontier://cms_conditions_data/CMS_COND_ECAL">
-  <parameter name="user" value="" />
-  <parameter name="password" value="" />
+<connection name="oracle://devdb10/CMS_COND_ECAL">
+  <parameter name="user" value="cms_cond_ecal" />
+  <parameter name="password" value="w3807dev" />
 </connection>
-
-<connection name="sqlite_file:ecalcalib.db">
-  <parameter name="user" value="" />
-  <parameter name="password" value="" />
+<connection name="oracle://devdb10/CMS_COND_GENERAL">
+  <parameter name="user" value="cms_cond_general_r" />
+  <parameter name="password" value="r1107dev" />
 </connection>
-
-<connection name="sqlite_file:test.db">
-  <parameter name="user" value="" />
-  <parameter name="password" value="" />
-</connection>
-
-<connection name="oracle://devdb10/CMS_XIEZHEN_DEV">
-  <parameter name="user" value="" />
-  <parameter name="password" value="" />
-</connection>
-
 </connectionlist>
