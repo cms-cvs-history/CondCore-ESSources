@@ -114,29 +114,25 @@ PoolDBESSource::PoolDBESSource( const edm::ParameterSet& iConfig ) :
   std::string connect;
   bool usingDefaultCatalog=false;
   connect=iConfig.getParameter<std::string>("connect");
-  catStr=iConfig.getUntrackedParameter<std::string>("catalog","");
-  bool siteLocalConfig=iConfig.getUntrackedParameter<bool>("siteLocalConfig",false);
+  if( iConfig.exists("InPathCatalog") ){
+    edm::FileInPath inpathcat=iConfig.getParameter<edm::FileInPath>("InPathCatalog");
+    catStr="file://" + inpathcat.fullPath();
+    //std::cout<<"full path "<<catStr<<std::endl;
+  }else{
+    catStr=iConfig.getUntrackedParameter<std::string>("catalog","");
+  }
   if( catStr.empty() ){
     usingDefaultCatalog=true;
-    /*}else if( catStr.find(':')==std::string::npos ){
-    //if catalog string has no protocol,assuming local xml catalog with default name and search in FileInPath
-    std::cout<<"catStr 1 "<<catStr<<std::endl;
-    edm::FileInPath fip(catStr);
-    std::cout<<"catStr 2 "<<catStr<<std::endl;
-    std::string fullname=fip.fullPath();
-    std::cout<<"fullname "<<fullname<<std::endl;
-    catconnect=std::string("xmlcatalog_file://")+fullname;
-    std::cout<<"catconnect "<<catconnect<<std::endl;
-    */
   }else{
     catconnect=catStr;
   }
-
+  bool siteLocalConfig=iConfig.getUntrackedParameter<bool>("siteLocalConfig",false);
   cond::DBCatalog mycat;
   std::pair<std::string,std::string> logicalService=mycat.logicalservice(connect);
   std::string logicalServiceName=logicalService.first;
   if( !logicalServiceName.empty() ){
-    if( usingDefaultCatalog ){
+    if( usingDefaultCatalog ){ 
+      //This is really the last try on the default. Do not think this is a general hardcoding!
       if( logicalServiceName=="dev" ){
 	catconnect=mycat.defaultDevCatalogName();
       }else if( logicalServiceName=="online" ){
