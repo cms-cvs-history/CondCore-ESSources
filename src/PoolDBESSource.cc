@@ -138,7 +138,7 @@ PoolDBESSource::PoolDBESSource( const edm::ParameterSet& iConfig ) :
 	catconnect=mycat.defaultOnlineCatalogName();
       }else if( logicalServiceName=="offline" ){
 	catconnect=mycat.defaultOfflineCatalogName();
-      }else if( logicalServiceName=="local" ){
+      }else{
 	throw cond::Exception(std::string("no default catalog found for ")+logicalServiceName);
       }
     }
