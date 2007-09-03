@@ -131,8 +131,7 @@ PoolDBESSource::PoolDBESSource( const edm::ParameterSet& iConfig ) :
   std::pair<std::string,std::string> logicalService=mycat.logicalservice(connect);
   std::string logicalServiceName=logicalService.first;
   if( !logicalServiceName.empty() ){
-    if( usingDefaultCatalog ){ 
-      //This is really the last try on the default. Do not think this is a general hardcoding!
+    if( usingDefaultCatalog ){
       if( logicalServiceName=="dev" ){
 	catconnect=mycat.defaultDevCatalogName();
       }else if( logicalServiceName=="online" ){
@@ -140,20 +139,6 @@ PoolDBESSource::PoolDBESSource( const edm::ParameterSet& iConfig ) :
       }else if( logicalServiceName=="offline" ){
 	catconnect=mycat.defaultOfflineCatalogName();
       }else if( logicalServiceName=="local" ){
-	//if catalog string empty, and service level is local assuming local xml catalog with default name and $CMSSW_DATA_PATH/data-CondCore-SQLiteData/1.0/data/localCondDBCatalog.xml
-	const char* datatop = getenv("CMSSW_DATA_PATH");
-	if(!datatop) throw cond::Exception("CMSSW_DATA_PATH is not set");
-	fs::path full_path(datatop);
-	full_path/=fs::path("data-CondCore-SQLiteData");
-	full_path/=fs::path("1");
-        full_path/=fs::path("CondCore");
-	full_path/=fs::path("SQLiteData");
-	full_path/=fs::path("data");
-	full_path/=fs::path("localCondDBCatalog.xml");
-	std::string fullname=full_path.string();
-	if( !fs::exists(full_path) ) throw cond::Exception(std::string("default catalog ")+fullname+" not found"); 
-	catconnect=std::string("xmlcatalog_file://")+fullname;
-      }else{
 	throw cond::Exception(std::string("no default catalog found for ")+logicalServiceName);
       }
     }
@@ -283,7 +268,7 @@ PoolDBESSource::PoolDBESSource( const edm::ParameterSet& iConfig ) :
 PoolDBESSource::~PoolDBESSource()
 {
   // std::cout<<"PoolDBESSource::~PoolDBESSource"<<std::endl;
-  if(m_session->isActive()){
+  if( m_session->isActive() ){
     m_pooldb->disconnect();
     m_session->close();
   }
