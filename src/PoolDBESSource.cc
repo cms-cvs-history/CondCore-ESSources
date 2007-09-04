@@ -1,7 +1,7 @@
 // system include files
 #include "boost/shared_ptr.hpp"
-#include "boost/filesystem/path.hpp"
-#include "boost/filesystem/operations.hpp"
+//#include "boost/filesystem/path.hpp"
+//#include "boost/filesystem/operations.hpp"
 // user include files
 #include "CondCore/ESSources/interface/PoolDBESSource.h"
 #include "CondCore/DBCommon/interface/DBSession.h"
@@ -19,6 +19,7 @@
 #include "CondCore/IOVService/interface/IOVService.h"
 #include "CondCore/IOVService/interface/IOVNames.h"
 #include "CondCore/MetaDataService/interface/MetaData.h"
+#include "CondCore/MetaDataService/interface/MetaDataNames.h"
 #include "POOLCore/Exception.h"
 #include "RelationalAccess/IConnectionService.h"
 #include "RelationalAccess/IWebCacheControl.h"
@@ -250,6 +251,7 @@ PoolDBESSource::PoolDBESSource( const edm::ParameterSet& iConfig ) :
     //get handle to webCacheControl()
     connSvc->webCacheControl().refreshTable( logicalconnect,cond::IOVNames::iovTableName() );
     connSvc->webCacheControl().refreshTable( logicalconnect,cond::IOVNames::iovDataTableName() );
+    connSvc->webCacheControl().refreshTable( logicalconnect,cond::MetaDataNames::metadataTable() );
   }
   //else{
   //  mycatalog=iConfig.getUntrackedParameter<std::string>("catalog","");
