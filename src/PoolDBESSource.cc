@@ -25,7 +25,7 @@
 #include "RelationalAccess/IWebCacheControl.h"
 #include "FWCore/Catalog/interface/SiteLocalConfig.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
-#include "CondCore/DBCommon/interface/DBCatalog.h"
+//#include "CondCore/DBCommon/interface/DBCatalog.h"
 #include <exception>
 //#include <iostream>
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -111,48 +111,11 @@ PoolDBESSource::PoolDBESSource( const edm::ParameterSet& iConfig ) :
   //std::cout<<"PoolDBESSource::PoolDBESSource"<<std::endl;
   /*parameter set parsing and pool environment setting
    */
-  std::string catStr,catconnect, mycatalog;
+  std::string catStr, mycatalog;
   std::string connect;
-  bool usingDefaultCatalog=false;
   connect=iConfig.getParameter<std::string>("connect");
-  if( iConfig.exists("InPathCatalog") ){
-    edm::FileInPath inpathcat=iConfig.getParameter<edm::FileInPath>("InPathCatalog");
-    catStr="file://" + inpathcat.fullPath();
-    //std::cout<<"full path "<<catStr<<std::endl;
-  }else{
-    catStr=iConfig.getUntrackedParameter<std::string>("catalog","");
-  }
-  if( catStr.empty() ){
-    usingDefaultCatalog=true;
-  }else{
-    catconnect=catStr;
-  }
   bool siteLocalConfig=iConfig.getUntrackedParameter<bool>("siteLocalConfig",false);
-  cond::DBCatalog mycat;
-  std::pair<std::string,std::string> logicalService=mycat.logicalservice(connect);
-  std::string logicalServiceName=logicalService.first;
-  if( !logicalServiceName.empty() ){
-    if( usingDefaultCatalog ){
-      if( logicalServiceName=="dev" ){
-	catconnect=mycat.defaultDevCatalogName();
-      }else if( logicalServiceName=="online" ){
-	catconnect=mycat.defaultOnlineCatalogName();
-      }else if( logicalServiceName=="offline" ){
-	catconnect=mycat.defaultOfflineCatalogName();
-      }else{
-	throw cond::Exception(std::string("no default catalog found for ")+logicalServiceName);
-      }
-    }
-    mycat.poolCatalog().setWriteCatalog(catconnect);
-    mycat.poolCatalog().connect();
-    mycat.poolCatalog().start();
-    std::string pf=mycat.getPFN(mycat.poolCatalog(),connect, siteLocalConfig);
-    mycat.poolCatalog().commit();
-    mycat.poolCatalog().disconnect();
-    connect=pf;
-  }
   //std::cout<<"using connect "<<connect<<std::endl;
-  //std::cout<<"using catalog "<<catconnect<<std::endl;
   m_session=new cond::DBSession(true);
   edm::ParameterSet connectionPset = iConfig.getParameter<edm::ParameterSet>("DBParameters"); 
   using namespace edm;
@@ -229,9 +192,6 @@ PoolDBESSource::PoolDBESSource( const edm::ParameterSet& iConfig ) :
     }
   }
   cond::ConfigSessionFromParameterSet configConnection(*m_session,connectionPset);
-  //std::string authpath("CORAL_AUTH_PATH=");
-  //authpath+=m_session->sessionConfiguration().authName();
-  //::putenv(const_cast<char*>(authpath.c_str()));
   m_session->open();
   if( siteLocalConfig ){
     edm::Service<edm::SiteLocalConfig> localconfservice;
@@ -239,26 +199,36 @@ PoolDBESSource::PoolDBESSource( const edm::ParameterSet& iConfig ) :
       throw cms::Exception("edm::SiteLocalConfigService is not available");       
     }
     connect=localconfservice->lookupCalibConnect(connect);
-    //catconnect=iConfig.getUntrackedParameter<std::string>("catalog","");
-    if(usingDefaultCatalog){ //jump to use the frontier catalog
-      catconnect=localconfservice->calibCatalog();
-    }
-    std::string logicalconnect=localconfservice->calibLogicalServer();
-    //std::cout<<"logicalconnect "<<logicalconnect<<std::endl;
-    //get handle to IConnectionService
-    seal::IHandle<coral::IConnectionService>
-      connSvc = m_session->serviceLoader().context()->query<coral::IConnectionService>( "CORAL/Services/ConnectionService" );
-    //get handle to webCacheControl()
-    connSvc->webCacheControl().refreshTable( logicalconnect,cond::IOVNames::iovTableName() );
-    connSvc->webCacheControl().refreshTable( logicalconnect,cond::IOVNames::iovDataTableName() );
-    connSvc->webCacheControl().refreshTable( logicalconnect,cond::MetaDataNames::metadataTable() );
   }
-  //else{
-  //  mycatalog=iConfig.getUntrackedParameter<std::string>("catalog","");
-  //}
+  ///handle frontier cache refresh
+  if( connect.rfind("frontier://") != std::string::npos){
+    //Mark tables that need to not be cached (always refreshed)
+    //strip off the leading protocol:// and trailing schema name from connect
+    std::string::size_type startRefresh = connect.find("://");
+    if (startRefresh != std::string::npos){
+      startRefresh += 3;
+    }
+    std::string::size_type endRefresh = connect.rfind("/", std::string::npos);
+    std::string refreshConnect;
+    if (endRefresh == std::string::npos){
+      refreshConnect = connect;
+    }else{
+      refreshConnect = connect.substr(startRefresh, endRefresh-startRefresh);
+      if(refreshConnect.substr(0,1) != "("){
+	//if the connect string is not a complicated parenthesized string,
+	// an http:// needs to be at the beginning of it
+	refreshConnect.insert(0, "http://");
+      }
+    }
+    seal::IHandle<coral::IConnectionService> connSvc=m_session->serviceLoader().context()->query<coral::IConnectionService>( "CORAL/Services/ConnectionService" );
+    //get handle to webCacheControl()
+    connSvc->webCacheControl().refreshTable( refreshConnect,cond::IOVNames::iovTableName() );
+    connSvc->webCacheControl().refreshTable( refreshConnect,cond::IOVNames::iovDataTableName() );
+    connSvc->webCacheControl().refreshTable( refreshConnect,cond::MetaDataNames::metadataTable() );
+  }
   m_con=connect;
-  //std::cout<<"m_con here "<<m_con<<std::endl;
-  //std::cout<<"about to use the real catalog "<<catconnect<<std::endl;
+  std::string catconnect="pfncatalog_memory://POOL_RDBMS?";
+  catconnect.append(m_con);
   m_pooldb=new cond::PoolStorageManager(m_con,catconnect,m_session);
   if(m_timetype=="timestamp"){
     m_iovservice=new cond::IOVService(*m_pooldb,cond::timestamp);

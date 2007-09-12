@@ -18,7 +18,7 @@ int main(){
     cond::DBSession* session=new cond::DBSession;
     session->sessionConfiguration().setMessageLevel(cond::Error);
     session->open();
-    cond::PoolStorageManager pooldb("sqlite_file:test.db","file:mycatalog.xml",session);
+    cond::PoolStorageManager pooldb("sqlite_file:test.db","pfncatalog_memory://POOL_RDBMS?",session);
     pooldb.connect();
     cond::IOVService iovmanager(pooldb);
     cond::IOVEditor* ioveditor=iovmanager.newIOVEditor();
