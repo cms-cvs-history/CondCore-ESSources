@@ -1,7 +1,5 @@
 // system include files
 #include "boost/shared_ptr.hpp"
-//#include "boost/filesystem/path.hpp"
-//#include "boost/filesystem/operations.hpp"
 // user include files
 #include "CondCore/ESSources/interface/PoolDBESSource.h"
 #include "CondCore/DBCommon/interface/DBSession.h"
@@ -25,7 +23,7 @@
 #include "RelationalAccess/IWebCacheControl.h"
 #include "FWCore/Catalog/interface/SiteLocalConfig.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
-//#include "CondCore/DBCommon/interface/DBCatalog.h"
+#include "CondCore/DBCommon/interface/FipProtocolParser.h"
 #include <exception>
 //#include <iostream>
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -114,6 +112,10 @@ PoolDBESSource::PoolDBESSource( const edm::ParameterSet& iConfig ) :
   std::string catStr, mycatalog;
   std::string connect;
   connect=iConfig.getParameter<std::string>("connect");
+  if( connect.find("sqlite_fip:") != std::string::npos ){
+    cond::FipProtocolParser p;
+    connect=p.getRealConnect(connect);
+  }
   bool siteLocalConfig=iConfig.getUntrackedParameter<bool>("siteLocalConfig",false);
   //std::cout<<"using connect "<<connect<<std::endl;
   m_session=new cond::DBSession(true);
