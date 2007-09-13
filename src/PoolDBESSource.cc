@@ -30,7 +30,7 @@
 #include "FileCatalog/IFileCatalog.h"
 #include <sstream>
 #include <cstdlib>
-namespace fs = boost::filesystem;
+//namespace fs = boost::filesystem;
 //
 // static data member definitions
 //
