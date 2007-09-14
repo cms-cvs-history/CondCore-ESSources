@@ -116,7 +116,7 @@ PoolDBESSource::PoolDBESSource( const edm::ParameterSet& iConfig ) :
     cond::FipProtocolParser p;
     connect=p.getRealConnect(connect);
   }
-  bool siteLocalConfig=iConfig.getUntrackedParameter<bool>("siteLocalConfig",false);
+  //bool siteLocalConfig=iConfig.getUntrackedParameter<bool>("siteLocalConfig",false);
   //std::cout<<"using connect "<<connect<<std::endl;
   m_session=new cond::DBSession(true);
   edm::ParameterSet connectionPset = iConfig.getParameter<edm::ParameterSet>("DBParameters"); 
@@ -195,17 +195,15 @@ PoolDBESSource::PoolDBESSource( const edm::ParameterSet& iConfig ) :
   }
   cond::ConfigSessionFromParameterSet configConnection(*m_session,connectionPset);
   m_session->open();
-  if( siteLocalConfig ){
+  ///handle frontier cache refresh
+  if( connect.rfind("frontier://") != std::string::npos){
+    //Mark tables that need to not be cached (always refreshed)
+    //strip off the leading protocol:// and trailing schema name from connect
     edm::Service<edm::SiteLocalConfig> localconfservice;
     if( !localconfservice.isAvailable() ){
       throw cms::Exception("edm::SiteLocalConfigService is not available");       
     }
     connect=localconfservice->lookupCalibConnect(connect);
-  }
-  ///handle frontier cache refresh
-  if( connect.rfind("frontier://") != std::string::npos){
-    //Mark tables that need to not be cached (always refreshed)
-    //strip off the leading protocol:// and trailing schema name from connect
     std::string::size_type startRefresh = connect.find("://");
     if (startRefresh != std::string::npos){
       startRefresh += 3;
