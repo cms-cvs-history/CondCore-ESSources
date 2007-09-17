@@ -109,12 +109,20 @@ PoolDBESSource::PoolDBESSource( const edm::ParameterSet& iConfig ) :
   //std::cout<<"PoolDBESSource::PoolDBESSource"<<std::endl;
   /*parameter set parsing and pool environment setting
    */
-  std::string catStr, mycatalog;
+  std::string catStr;
   std::string connect;
   connect=iConfig.getParameter<std::string>("connect");
   if( connect.find("sqlite_fip:") != std::string::npos ){
     cond::FipProtocolParser p;
     connect=p.getRealConnect(connect);
+  }
+  std::string blobstreamerName("");
+  if( iConfig.exists("BlobStreamerName") ){
+    blobstreamerName=iConfig.getUntrackedParameter<std::string>("BlobStreamerName");
+    blobstreamerName.insert(0,"COND/Services/");
+  }
+  if( !blobstreamerName.empty() ){
+    m_session->sessionConfiguration().setBlobStreamer(blobstreamerName);
   }
   //bool siteLocalConfig=iConfig.getUntrackedParameter<bool>("siteLocalConfig",false);
   //std::cout<<"using connect "<<connect<<std::endl;
