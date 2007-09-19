@@ -9,3 +9,7 @@
 <library file=stubs/PedestalsAnalyzer.cc name=PedestalsAnalyzer>
         <flags EDM_PLUGIN=1>
 </library>
+<library file=stubs/PedestalsByLabelAnalyzer.cc name=PedestalsByLabelAnalyzer>
+        <flags EDM_PLUGIN=1>
+</library>
+
