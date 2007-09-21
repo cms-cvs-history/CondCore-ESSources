@@ -5,7 +5,9 @@
 <use name=CondCore/MetaDataService>
 <use name=FWCore/Framework>	
 <use name=CondFormats/DataRecord>
+<use name=RelationalAccess>
 <bin file=testWriteCondData.cpp></bin>
+<bin file=writeTestTagDB.cpp></bin>
 <library file=stubs/PedestalsAnalyzer.cc name=PedestalsAnalyzer>
         <flags EDM_PLUGIN=1>
 </library>
