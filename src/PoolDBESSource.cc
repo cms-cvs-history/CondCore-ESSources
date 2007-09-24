@@ -116,17 +116,15 @@ PoolDBESSource::PoolDBESSource( const edm::ParameterSet& iConfig ) :
     cond::FipProtocolParser p;
     connect=p.getRealConnect(connect);
   }
+  std::cout<<"using connect "<<connect<<std::endl;
+  m_session=new cond::DBSession(true);
   std::string blobstreamerName("");
   if( iConfig.exists("BlobStreamerName") ){
     blobstreamerName=iConfig.getUntrackedParameter<std::string>("BlobStreamerName");
     blobstreamerName.insert(0,"COND/Services/");
-  }
-  if( !blobstreamerName.empty() ){
+    //std::cout<<"blobstreamerName "<<blobstreamerName<<std::endl;
     m_session->sessionConfiguration().setBlobStreamer(blobstreamerName);
   }
-  //bool siteLocalConfig=iConfig.getUntrackedParameter<bool>("siteLocalConfig",false);
-  //std::cout<<"using connect "<<connect<<std::endl;
-  m_session=new cond::DBSession(true);
   edm::ParameterSet connectionPset = iConfig.getParameter<edm::ParameterSet>("DBParameters"); 
   using namespace edm;
   using namespace edm::eventsetup;  
