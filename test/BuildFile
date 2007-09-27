@@ -8,6 +8,7 @@
 <use name=RelationalAccess>
 <bin file=testWriteCondData.cpp></bin>
 <bin file=writeTestTagDB.cpp></bin>
+<bin file=writeBasicData.cpp></bin>
 <library file=stubs/PedestalsAnalyzer.cc name=PedestalsAnalyzer>
         <flags EDM_PLUGIN=1>
 </library>
