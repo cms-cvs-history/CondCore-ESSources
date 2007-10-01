@@ -7,6 +7,7 @@
 // user include files
 #include "FWCore/Framework/interface/DataProxyProvider.h"
 #include "FWCore/Framework/interface/EventSetupRecordIntervalFinder.h"
+#include "CondCore/DBCommon/interface/TagMetadata.h"
 namespace edm{
   class ParameterSet;
 }
@@ -14,6 +15,13 @@ namespace cond{
   class DBSession;
   class PoolStorageManager;
   class IOVService;
+  struct IOVInfo{
+    std::string tag; 
+    std::string token;
+    std::string label;
+    std::string pfn;
+    std::string timetype;
+  };
 }
 class PoolDBESSource : public edm::eventsetup::DataProxyProvider,public edm::EventSetupRecordIntervalFinder{
  public:
@@ -30,24 +38,19 @@ class PoolDBESSource : public edm::eventsetup::DataProxyProvider,public edm::Eve
   // ----------member data ---------------------------
   typedef std::multimap<std::string, std::string> RecordToTypes;
   RecordToTypes m_recordToTypes; //should be static?
-  typedef std::string proxyName;
-  typedef std::string tokenType;
-  typedef std::map<proxyName, tokenType > ProxyToToken;
-  ProxyToToken m_proxyToToken;
-  typedef ProxyToToken::iterator pProxyToToken;
-  std::string m_con;
-  typedef std::map<std::string, std::string > RecordToIOV;
-  RecordToIOV m_recordToIOV;
-  //std::vector< std::pair < std::string, std::string> > m_recordToTag;
-  std::string m_timetype;
+  typedef std::map<std::string,std::vector<cond::IOVInfo> > ProxyToIOVInfo;
+  ProxyToIOVInfo m_proxyToIOVInfo;
+  typedef std::map< std::string, cond::TagMetadata > TagCollection;
+  TagCollection m_tagCollection;
+  typedef std::map<std::string, std::string > DatumToToken;
+  DatumToToken m_datumToToken;
   cond::DBSession* m_session;
   cond::IOVService* m_iovservice;
   cond::PoolStorageManager* m_pooldb;
-  //bool m_tagTranslated;
-  //std::string m_catalog; 
-  bool m_connected;
+  std::string m_timetype;
+  bool m_connected; 
+  std::string m_con;
  private:
-  void tagToToken(const std::vector< std::pair < std::string, std::string> >& recordToTag);
-  //void initIOV();
+  void fillRecordToIOVInfo();
 };
 #endif
