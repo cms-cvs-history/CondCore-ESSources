@@ -142,7 +142,7 @@ int main(){
     treetable.dataEditor().rowBuffer(nodedata);
     coral::IBulkOperation* treeInserter = treetable.dataEditor().bulkInsert(nodedata,6);    
     nodedata["nodeid"].data<unsigned int>()=1;
-    nodedata["nodelabel"].data<std::string>()="ALL";
+    nodedata["nodelabel"].data<std::string>()="All";
     nodedata["lft"].data<unsigned int>()=1;
     nodedata["rgt"].data<unsigned int>()=12;
     nodedata["parentid"].data<unsigned int>()=0;
