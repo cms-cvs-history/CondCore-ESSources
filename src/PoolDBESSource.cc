@@ -1,3 +1,16 @@
+// -*- C++ -*-
+//
+// Package:     CondCore/ESSources
+// Module:      PoolDBESSource
+// 
+// Description: <one line class summary>
+//
+// Implementation:
+//     <Notes on implementation>
+//
+// Author:      Zhen Xie
+//
+
 // system include files
 #include "boost/shared_ptr.hpp"
 // user include files
@@ -28,8 +41,8 @@
 //#include <iostream>
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FileCatalog/IFileCatalog.h"
-#include <sstream>
-#include <cstdlib>
+//#include <sstream>
+//#include <cstdlib>
 //namespace fs = boost::filesystem;
 //
 // static data member definitions
@@ -102,8 +115,8 @@ fillRecordToTypeMap(std::multimap<std::string, std::string>& oToFill){
 // constructors and destructor
 //
 PoolDBESSource::PoolDBESSource( const edm::ParameterSet& iConfig ) :
-  m_timetype(iConfig.getParameter<std::string>("timetype") ),
   m_session( 0 ), 
+  m_timetype(iConfig.getParameter<std::string>("timetype") ),
   m_connected( false )
 {		
   //std::cout<<"PoolDBESSource::PoolDBESSource"<<std::endl;
@@ -177,14 +190,23 @@ PoolDBESSource::PoolDBESSource( const edm::ParameterSet& iConfig ) :
   cond::ConfigSessionFromParameterSet configConnection(*m_session,connectionPset);
   m_session->open();
   ///handle frontier cache refresh
-  if( connect.rfind("frontier://") != std::string::npos){
+  std::string proto("frontier://");
+  std::string::size_type fpos=connect.find(proto);
+  if( fpos!= std::string::npos){
+    unsigned int nslash=this->countslash(connect.substr(proto.size(),connect.size()-fpos));
+    if( nslash!=1 && nslash!=2) {
+      throw cms::Exception("connect string "+connect+" has bad format");
+    }
     //Mark tables that need to not be cached (always refreshed)
     //strip off the leading protocol:// and trailing schema name from connect
-    edm::Service<edm::SiteLocalConfig> localconfservice;
-    if( !localconfservice.isAvailable() ){
-      throw cms::Exception("edm::SiteLocalConfigService is not available");       
+    if(nslash==1){
+      //frontier connect string need site local translation
+      edm::Service<edm::SiteLocalConfig> localconfservice;
+      if( !localconfservice.isAvailable() ){
+	throw cms::Exception("edm::SiteLocalConfigService is not available"); 
+      }
+      connect=localconfservice->lookupCalibConnect(connect);
     }
-    connect=localconfservice->lookupCalibConnect(connect);
     std::string::size_type startRefresh = connect.find("://");
     if (startRefresh != std::string::npos){
       startRefresh += 3;
@@ -206,7 +228,7 @@ PoolDBESSource::PoolDBESSource( const edm::ParameterSet& iConfig ) :
     connSvc->webCacheControl().refreshTable( refreshConnect,cond::IOVNames::iovTableName() );
     connSvc->webCacheControl().refreshTable( refreshConnect,cond::IOVNames::iovDataTableName() );
     connSvc->webCacheControl().refreshTable( refreshConnect,cond::MetaDataNames::metadataTable() );
-  }
+       }
   m_con=connect;
   std::string catconnect="pfncatalog_memory://POOL_RDBMS?";
   catconnect.append(m_con);
@@ -401,28 +423,19 @@ PoolDBESSource::fillRecordToIOVInfo(){
     throw e;
   }
 }
-/*void PoolDBESSource::tagToToken( const std::vector< std::pair < std::string, std::string> >& recordToTag ){
-  try{
-    if( recordToTag.size()==0 ) return;
-    cond::RelationalStorageManager coraldb(m_con,m_session);
-    cond::MetaData metadata(coraldb);
-    coraldb.connect(cond::ReadOnly);
-    coraldb.startTransaction(true);
-    std::vector< std::pair<std::string, std::string> >::const_iterator it;
-    for(it=recordToTag.begin(); it!=recordToTag.end(); ++it){
-      std::string iovToken=metadata.getToken(it->second);
-      if( iovToken.empty() ){
-	throw cond::Exception("PoolDBESSource::tagToToken: tag "+it->second+std::string(" has empty iov token") );
-      }
-      m_recordToIOV.insert(std::make_pair(it->first,iovToken));
+unsigned int
+PoolDBESSource::countslash(const std::string& input)const{
+  unsigned int count=0;
+  std::string::size_type slashpos( 0 );
+  while( slashpos!=std::string::npos){
+    slashpos = input.find('/', slashpos );
+    if ( slashpos != std::string::npos ){
+      ++count;
+      // start next search after this word
+      slashpos += 1;
     }
-    coraldb.commit();
-    coraldb.disconnect();
-  }catch(const cond::Exception&e ){
-    throw e;
-  }catch(const cms::Exception&e ){
-    throw e;
   }
+  return count;
 }
-*/
+
 
