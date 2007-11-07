@@ -2,11 +2,6 @@
 //
 // Package:     CondCore/ESSources
 // Module:      PoolDBESSource
-// 
-// Description: <one line class summary>
-//
-// Implementation:
-//     <Notes on implementation>
 //
 // Author:      Zhen Xie
 //
@@ -257,7 +252,7 @@ PoolDBESSource::~PoolDBESSource()
 //
 void 
 PoolDBESSource::setIntervalFor( const edm::eventsetup::EventSetupRecordKey& iKey, const edm::IOVSyncValue& iTime, edm::ValidityInterval& oInterval ) {
-  LogDebug ("PoolDBESSource")<<iKey.name();
+  //LogDebug ("PoolDBESSource")<<iKey.name();
   //std::cout<<"PoolDBESSource::setIntervalFor "<< iKey.name() <<" at time "<<iTime.eventID().run()<<std::endl;
   std::string recordname=iKey.name();
   std::string objectname("");
@@ -352,19 +347,29 @@ PoolDBESSource::registerProxies(const edm::eventsetup::EventSetupRecordKey& iRec
   std::string proxyname("");
   std::pair< RecordToTypes::iterator,RecordToTypes::iterator > typeItrs = m_recordToTypes.equal_range( recordname );
   for( RecordToTypes::iterator itType = typeItrs.first; itType != typeItrs.second; ++itType ) {
-    static edm::eventsetup::TypeTag defaultType;
+    static const edm::eventsetup::TypeTag defaultType;
     edm::eventsetup::TypeTag type = edm::eventsetup::TypeTag::findType(itType->second);
+    if(defaultType == type ) {
+      //std::cout <<"WARNING: unknown type '"<<itType->second<<"'"<<std::endl;
+      edm::LogWarning("PoolDBESSource ")<<"WARNING unknown type '" <<itType->second<<"'";
+      continue;
+    }
     objectname=type.name();
     proxyname=buildName(recordname,objectname);
     ProxyToIOVInfo::iterator pProxyToIOVInfo=m_proxyToIOVInfo.find( proxyname );
+    if ( pProxyToIOVInfo == m_proxyToIOVInfo.end() ) {
+      //std::cout << "WARNING: Proxy not found " << proxyname<<std::endl;
+      edm::LogWarning("PoolDBESSource ")<<"WARNING Proxy not found "<<proxyname;
+      continue;
+    }
     for( std::vector<cond::IOVInfo>::iterator it=pProxyToIOVInfo->second.begin();it!=pProxyToIOVInfo->second.end(); ++it ){
-      edm::eventsetup::IdTags iid( it->label.c_str() );
+      //edm::eventsetup::IdTags iid( it->label.c_str() );
       std::string datumName=recordname+"@"+objectname+"@"+(it->label);
       std::map<std::string,std::string>::iterator pDatumToToken=m_datumToToken.find(datumName);
       if( type != defaultType ) {
 	boost::shared_ptr<edm::eventsetup::DataProxy> proxy(cond::ProxyFactory::get()->create( proxyname ,m_pooldb,pDatumToToken) );
 	if(0 != proxy.get()) {
-	  edm::eventsetup::DataKey key( type, iid );
+	  edm::eventsetup::DataKey key( type,edm::eventsetup::IdTags(it->label.c_str()));
 	  aProxyList.push_back(KeyedProxies::value_type(key,proxy));
 	}
       }
