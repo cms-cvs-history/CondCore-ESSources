@@ -351,7 +351,7 @@ PoolDBESSource::registerProxies(const edm::eventsetup::EventSetupRecordKey& iRec
     edm::eventsetup::TypeTag type = edm::eventsetup::TypeTag::findType(itType->second);
     if(defaultType == type ) {
       //std::cout <<"WARNING: unknown type '"<<itType->second<<"'"<<std::endl;
-      edm::LogWarning("PoolDBESSource ")<<"WARNING unknown type '" <<itType->second<<"'";
+      LogDebug("PoolDBESSource ")<<"unknown type '" <<itType->second<<"', continue";
       continue;
     }
     objectname=type.name();
@@ -359,7 +359,7 @@ PoolDBESSource::registerProxies(const edm::eventsetup::EventSetupRecordKey& iRec
     ProxyToIOVInfo::iterator pProxyToIOVInfo=m_proxyToIOVInfo.find( proxyname );
     if ( pProxyToIOVInfo == m_proxyToIOVInfo.end() ) {
       //std::cout << "WARNING: Proxy not found " << proxyname<<std::endl;
-      edm::LogWarning("PoolDBESSource ")<<"WARNING Proxy not found "<<proxyname;
+      LogDebug("PoolDBESSource ")<<"Proxy not found "<<proxyname<<", continue";
       continue;
     }
     for( std::vector<cond::IOVInfo>::iterator it=pProxyToIOVInfo->second.begin();it!=pProxyToIOVInfo->second.end(); ++it ){
