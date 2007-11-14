@@ -189,9 +189,9 @@ PoolDBESSource::PoolDBESSource( const edm::ParameterSet& iConfig ) :
   std::string::size_type fpos=connect.find(proto);
   if( fpos!= std::string::npos){
     unsigned int nslash=this->countslash(connect.substr(proto.size(),connect.size()-fpos));
-    if( nslash!=1 && nslash!=2) {
-      throw cms::Exception("connect string "+connect+" has bad format");
-    }
+    //if( nslash!=1 && nslash!=2) {
+    //  throw cms::Exception("connect string "+connect+" has bad format");
+    //}
     //Mark tables that need to not be cached (always refreshed)
     //strip off the leading protocol:// and trailing schema name from connect
     if(nslash==1){
