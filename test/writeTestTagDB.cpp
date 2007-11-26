@@ -2,7 +2,7 @@
 #include "CondCore/DBCommon/interface/Time.h"
 #include "CondCore/DBCommon/interface/SessionConfiguration.h"
 #include "CondCore/DBCommon/interface/CoralTransaction.h"
-#include "CondCore/DBCommon/interface/ConnectionHandler.h"
+//#include "CondCore/DBCommon/interface/ConnectionHandler.h"
 #include "CondCore/DBCommon/interface/Connection.h"
 #include "CondCore/DBCommon/interface/Exception.h"
 #include "CondCore/DBCommon/interface/MessageLevel.h"
@@ -24,14 +24,11 @@ int main(){
   try{
     cond::DBSession* session=new cond::DBSession;
     session->configuration().setMessageLevel(cond::Error);
-    static cond::ConnectionHandler& conHandler=cond::ConnectionHandler::Instance();
-    conHandler.registerConnection("mytagdb","sqlite_file:tagDB.db",0);
+    cond::Connection myconnection("sqlite_file:tagDB.db",0);
     session->open();
-    conHandler.connect(session);
-    cond::Connection* myconnection=conHandler.getConnection("mytagdb");
-    
-    cond::CoralTransaction& coraldb=myconnection->coralTransaction(false);
-    coraldb.start();
+    myconnection.connect(session);
+    cond::CoralTransaction& coraldb=myconnection.coralTransaction();
+    coraldb.start(false);
     coral::TableDescription tagTreeTableDesc;
     coral::TableDescription tagInventoryTableDesc;
     tagTreeTableDesc.setName(tagTreeTable);
@@ -209,6 +206,7 @@ int main(){
     treeInserter->flush();
     coraldb.commit();
     delete treeInserter;
+    myconnection.disconnect();
     delete session;
     session=0;
   }catch(const cond::Exception& er){
