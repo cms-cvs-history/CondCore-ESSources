@@ -2,7 +2,6 @@
 #include "CondCore/DBCommon/interface/Time.h"
 #include "CondCore/DBCommon/interface/SessionConfiguration.h"
 #include "CondCore/DBCommon/interface/CoralTransaction.h"
-//#include "CondCore/DBCommon/interface/ConnectionHandler.h"
 #include "CondCore/DBCommon/interface/Connection.h"
 #include "CondCore/DBCommon/interface/Exception.h"
 #include "CondCore/DBCommon/interface/MessageLevel.h"
@@ -81,14 +80,14 @@ int main(){
     tagmetadata.pfn="sqlite_file:mytest.db";
     tagmetadata.recordname="PedestalsRcd";
     tagmetadata.objectname="Pedestals";
-    tagmetadata.labelname="";
+    tagmetadata.labelname="lab3d";
     tagmetadata.timetype="runnumber";
     tagcollection.push_back(std::make_pair<std::string,cond::TagMetadata>(tagname,tagmetadata));
     tagname="mypedestals";
     tagmetadata.pfn="sqlite_file:mytest.db";
     tagmetadata.recordname="PedestalsRcd";
     tagmetadata.objectname="Pedestals";
-    tagmetadata.labelname="";
+    tagmetadata.labelname="lab2";
     tagmetadata.timetype="runnumber";
     tagcollection.push_back(std::make_pair<std::string,cond::TagMetadata>(tagname,tagmetadata));
     tagname="anothermytest";
@@ -114,7 +113,7 @@ int main(){
       data["pfn"].data<std::string>() = it->second.pfn;
       data["recordname"].data<std::string>() = it->second.recordname;
       data["objectname"].data<std::string>() = it->second.objectname;
-      data["labelname"].data<std::string>() = "";
+      data["labelname"].data<std::string>() = it->second.labelname;
       data["timetype"].data<std::string>() = "runnumber";
       rowInserter->processNextIteration();
     }
@@ -129,7 +128,7 @@ int main(){
     };
     std::cout<<"building test tag tree"<<std::endl;
     /*
-                 ROOT(1,12)
+                 All(1,12)
                 /          \
       Calibration(2,7)     Alignment(8,11)
         /           \                /
