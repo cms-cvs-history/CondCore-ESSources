@@ -1,5 +1,4 @@
 #include "CondCore/DBCommon/interface/DBSession.h"
-#include "CondCore/DBCommon/interface/Time.h"
 #include "CondCore/DBCommon/interface/SessionConfiguration.h"
 #include "CondCore/DBCommon/interface/CoralTransaction.h"
 #include "CondCore/DBCommon/interface/Connection.h"
@@ -10,7 +9,6 @@
 #include "RelationalAccess/ITable.h"
 #include "RelationalAccess/TableDescription.h"
 #include "RelationalAccess/ITableDataEditor.h"
-#include "RelationalAccess/ITableSchemaEditor.h"
 #include "RelationalAccess/ITablePrivilegeManager.h"
 #include "RelationalAccess/IBulkOperation.h"
 #include "CoralBase/AttributeList.h"
