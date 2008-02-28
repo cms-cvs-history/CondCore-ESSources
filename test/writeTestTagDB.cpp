@@ -56,7 +56,6 @@ int main(){
     tagInventoryTableDesc.insertColumn("recordname", coral::AttributeSpecification::typeNameForId( typeid(std::string) ) );
     tagInventoryTableDesc.insertColumn("objectname", coral::AttributeSpecification::typeNameForId( typeid(std::string) ) );
     tagInventoryTableDesc.insertColumn("labelname", coral::AttributeSpecification::typeNameForId( typeid(std::string) ) );
-    tagInventoryTableDesc.insertColumn("timetype", coral::AttributeSpecification::typeNameForId( typeid(std::string) ) );
     tagInventoryTableDesc.insertColumn("comment", coral::AttributeSpecification::typeNameForId( typeid(std::string) ) );
     std::vector<std::string> pkcols;
     pkcols.push_back( "tagid" );
@@ -79,21 +78,18 @@ int main(){
     tagmetadata.recordname="PedestalsRcd";
     tagmetadata.objectname="Pedestals";
     tagmetadata.labelname="lab3d";
-    tagmetadata.timetype="runnumber";
     tagcollection.push_back(std::make_pair<std::string,cond::TagMetadata>(tagname,tagmetadata));
     tagname="mypedestals";
     tagmetadata.pfn="sqlite_file:mytest.db";
     tagmetadata.recordname="PedestalsRcd";
     tagmetadata.objectname="Pedestals";
     tagmetadata.labelname="lab2";
-    tagmetadata.timetype="runnumber";
     tagcollection.push_back(std::make_pair<std::string,cond::TagMetadata>(tagname,tagmetadata));
     tagname="anothermytest";
     tagmetadata.pfn="sqlite_file:mytest.db";
     tagmetadata.recordname="anotherPedestalsRcd";
     tagmetadata.objectname="Pedestals";
     tagmetadata.labelname="";
-    tagmetadata.timetype="runnumber";
     tagcollection.push_back(std::make_pair<std::string,cond::TagMetadata>(tagname,tagmetadata));
 
     std::cout<<"populate tag inventory"<<std::endl;
@@ -112,7 +108,6 @@ int main(){
       data["recordname"].data<std::string>() = it->second.recordname;
       data["objectname"].data<std::string>() = it->second.objectname;
       data["labelname"].data<std::string>() = it->second.labelname;
-      data["timetype"].data<std::string>() = "runnumber";
       rowInserter->processNextIteration();
     }
     rowInserter->flush();
