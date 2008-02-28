@@ -16,7 +16,7 @@
 #include "CoralBase/AttributeSpecification.h"
 #include <iostream>
 int main(){
-  const std::string tagTreeTable("TAGTREE_TABLE");
+  const std::string tagTreeTable("TAGTREE_TABLE_MYTREE1");
   const std::string tagInventoryTable("TAGINVENTORY_TABLE");
   try{
     cond::DBSession* session=new cond::DBSession;
