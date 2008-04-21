@@ -15,4 +15,8 @@
 <library file=stubs/PedestalsByLabelAnalyzer.cc name=PedestalsByLabelAnalyzer>
         <flags EDM_PLUGIN=1>
 </library>
+<library file=SiStripTest/noiseanalyzer.cc name=NoisesAnalyzer>
+        <flags EDM_PLUGIN=1>
+</library>
+
 
