@@ -92,7 +92,7 @@ fillRecordToTypeMap(std::multimap<std::string, std::string>& oToFill){
 //static cond::ConnectionHandler& conHandler=cond::ConnectionHandler::Instance();
 
 PoolDBESSource::PoolDBESSource( const edm::ParameterSet& iConfig ) :
-  m_session( new cond::DBSession )
+  m_session( new cond::DBSession ),initcall(true)
 {		
   //std::cout<<"PoolDBESSource::PoolDBESSource"<<std::endl;
   /*parameter set parsing and pool environment setting
@@ -239,6 +239,11 @@ PoolDBESSource::~PoolDBESSource()
 void 
 PoolDBESSource::setIntervalFor( const edm::eventsetup::EventSetupRecordKey& iKey, const edm::IOVSyncValue& iTime, edm::ValidityInterval& oInterval ){
   //std::cout<<"PoolDBESSource::setIntervalFor"<<std::endl;
+  if (initcall) {
+    //std::cout<<"first call do nothing"<<std::endl;
+    initcall=false;
+    return;
+  }
   //LogDebug ("PoolDBESSource")<<iKey.name();
   std::string recordname=iKey.name();
   std::string objectname("");
