@@ -18,5 +18,8 @@
 <library file=SiStripTest/noiseanalyzer.cc name=NoisesAnalyzer>
         <flags EDM_PLUGIN=1>
 </library>
-
+<library file=stubs/EfficiencyByLabelAnalyzer.cc name=ExEfficiencyByLabelAnalyzer>
+        <flags EDM_PLUGIN=1>
+</library>
+<
 
