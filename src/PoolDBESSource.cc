@@ -275,6 +275,7 @@ PoolDBESSource::setIntervalFor( const edm::eventsetup::EventSetupRecordKey& iKey
   if( !iovservice.isValid(leadingToken,abtime) ){
     os<<abtime;
     //throw cond::noDataForRequiredTimeException("PoolDBESSource::setIntervalFor",iKey.name(),os.str());
+    pooldb.commit();
     oInterval = edm::ValidityInterval::invalidInterval();
     return;
   }
@@ -285,7 +286,7 @@ PoolDBESSource::setIntervalFor( const edm::eventsetup::EventSetupRecordKey& iKey
     stop=edm::IOVSyncValue( edm::Timestamp(validity.second) );
   }else{
     start=edm::IOVSyncValue( edm::EventID(validity.first,0) );
-    stop=edm::IOVSyncValue( edm::EventID(validity.second,0) );
+    stop=edm::IOVSyncValue( edm::EventID(validity.second,edm::EventID::maxEventNumber()) );
   }
   oInterval = edm::ValidityInterval( start, stop );
   std::string payloadToken=iovservice.payloadToken(leadingToken,abtime);
