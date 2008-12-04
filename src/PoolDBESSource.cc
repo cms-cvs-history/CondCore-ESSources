@@ -8,7 +8,7 @@
 //     <Notes on implementation>
 //
 // Author:      Zhen Xie
-// $Id: PoolDBESSource.cc,v 1.105 2008/10/03 15:53:15 xiezhen Exp $
+// $Id: PoolDBESSource.cc,v 1.105.2.1 2008/12/02 17:50:10 xiezhen Exp $
 //
 // system include files
 #include "boost/shared_ptr.hpp"
@@ -190,7 +190,11 @@ PoolDBESSource::PoolDBESSource( const edm::ParameterSet& iConfig ) :
 	nm.labelname=itToGet->getUntrackedParameter<std::string>("label","");
 	nm.tag=itToGet->getUntrackedParameter<std::string>("tag");
 	nm.pfn=itToGet->getUntrackedParameter<std::string>("connect");
-	nm.objectname="";
+	std::multimap<std::string, std::string>::iterator itFound=m_recordToTypes.find(nm.recordname);
+	if(itFound == m_recordToTypes.end()){
+	  throw cond::Exception("NoRecord")<<" The record \""<<nm.recordname<<"\" is not known by the PoolDBESSource";
+	}
+	nm.objectname=itFound->second;
 	std::string k=nm.recordname+"@"+nm.labelname;
 	replacement.insert(std::make_pair<std::string,cond::TagMetadata>(k,nm));
       }
@@ -454,12 +458,20 @@ void
 PoolDBESSource::fillTagCollectionFromDB( cond::CoralTransaction& coraldb, 
 					 const std::string& roottag,
 					 std::map<std::string,cond::TagMetadata>& replacement){
+  //  std::cout<<"fillTagCollectionFromDB"<<std::endl;
   std::set< cond::TagMetadata > tagcoll;
   cond::TagCollectionRetriever tagRetriever( coraldb );
   tagRetriever.getTagCollection(roottag,tagcoll);
+ 
   std::set<cond::TagMetadata>::iterator it;
   std::set<cond::TagMetadata>::iterator itBeg=tagcoll.begin();
   std::set<cond::TagMetadata>::iterator itEnd=tagcoll.end();
+  if( replacement.size()==0 ){
+    for(it=itBeg; it!=itEnd; ++it){
+      m_tagCollection.insert(*it);
+    }
+    return;
+  }
   for(it=itBeg; it!=itEnd; ++it){
     std::string k=it->recordname+"@"+it->labelname;
     std::map<std::string,cond::TagMetadata>::iterator fid=replacement.find(k);
@@ -471,8 +483,20 @@ PoolDBESSource::fillTagCollectionFromDB( cond::CoralTransaction& coraldb,
       m.tag=fid->second.tag;
       m.objectname=it->objectname;
       m_tagCollection.insert(m);
+      replacement.erase(fid);
     }else{
       m_tagCollection.insert(*it);
     }
+  }
+  std::map<std::string,cond::TagMetadata>::iterator itrep;
+  std::map<std::string,cond::TagMetadata>::iterator itrepBeg=replacement.begin();
+  std::map<std::string,cond::TagMetadata>::iterator itrepEnd=replacement.end();
+  for(itrep=itrepBeg; itrep!=itrepEnd; ++itrep){
+    //std::cout<<"appending"<<std::endl;
+    //std::cout<<"pfn "<<itrep->second.pfn<<std::endl;
+    //std::cout<<"objectname "<<itrep->second.objectname<<std::endl;
+    //std::cout<<"tag "<<itrep->second.tag<<std::endl;
+    //std::cout<<"recordname "<<itrep->second.recordname<<std::endl;
+    m_tagCollection.insert(itrep->second);
   }
 }
