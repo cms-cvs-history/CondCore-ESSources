@@ -22,5 +22,5 @@
 <library file=stubs/EfficiencyByLabelAnalyzer.cc name=ExEfficiencyByLabelAnalyzer>
         <flags EDM_PLUGIN=1>
 </library>
-
+<bin file=testmySiStripNoises.cpp></bin>
 
