@@ -23,4 +23,5 @@ cd run
 cmsRun $runbasedir/src/CondCore/DBOutputService/test/python/testIOVPayloadAnalyzer_cfg.py
 echo "read back"
 cmsRun $runbasedir/src/CondCore/ESSources/test/python/print_ped_cfg.py
+cd ..
 exit 0
