@@ -25,5 +25,9 @@
 <library file=stubs/KeyListAnalyzer.cc name=KeyListAnalyzer>
         <flags EDM_PLUGIN=1>
 </library>
+<library file=stubs/TestUpdater.cc name=TestUpdater>
+        <flags EDM_PLUGIN=1>
+</library>
+
 <bin file=testmySiStripNoises.cpp></bin>
 
