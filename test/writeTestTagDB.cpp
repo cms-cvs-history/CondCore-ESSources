@@ -1,9 +1,6 @@
-#include "CondCore/DBCommon/interface/DBSession.h"
-#include "CondCore/DBCommon/interface/SessionConfiguration.h"
-#include "CondCore/DBCommon/interface/CoralTransaction.h"
-#include "CondCore/DBCommon/interface/Connection.h"
+#include "CondCore/DBCommon/interface/DbConnection.h"
+#include "CondCore/DBCommon/interface/DbTransaction.h"
 #include "CondCore/DBCommon/interface/Exception.h"
-#include "CondCore/DBCommon/interface/MessageLevel.h"
 #include "CondCore/DBCommon/interface/TagMetadata.h"
 #include "RelationalAccess/ISchema.h"
 #include "RelationalAccess/ITable.h"
@@ -19,13 +16,12 @@ int main(){
   const std::string tagTreeTable("TAGTREE_TABLE_MYTREE1");
   const std::string tagInventoryTable("TAGINVENTORY_TABLE");
   try{
-    cond::DBSession* session=new cond::DBSession;
-    session->configuration().setMessageLevel(cond::Error);
-    cond::Connection myconnection("sqlite_file:tagDB.db",0);
-    session->open();
-    myconnection.connect(session);
-    cond::CoralTransaction& coraldb=myconnection.coralTransaction();
-    coraldb.start(false);
+    cond::DbConnection connection;
+    connection.configuration().setMessageLevel( coral::Error );
+    connection.configure();
+    cond::DbSession session = connection.createSession();
+    session.open( "sqlite_file:tagDB.db" );
+    session.transaction().start(false);
     coral::TableDescription tagTreeTableDesc;
     coral::TableDescription tagInventoryTableDesc;
     tagTreeTableDesc.setName(tagTreeTable);
@@ -46,7 +42,7 @@ int main(){
     tagTreeTableDesc.setNotNullConstraint( "rgt" );
     tagTreeTableDesc.setNotNullConstraint( "tagid" );
     tagTreeTableDesc.setUniqueConstraint( "nodelabel" );
-    coral::ITable& treetable=coraldb.nominalSchema().createTable( tagTreeTableDesc );
+    coral::ITable& treetable=session.nominalSchema().createTable( tagTreeTableDesc );
     treetable.privilegeManager().grantToPublic( coral::ITablePrivilegeManager::Select);
     
     tagInventoryTableDesc.setName(tagInventoryTable);
@@ -66,7 +62,7 @@ int main(){
     tagInventoryTableDesc.setNotNullConstraint( "objectname" );
     tagInventoryTableDesc.setNotNullConstraint( "labelname" );
     tagInventoryTableDesc.setUniqueConstraint( "tagname" );
-    coral::ITable& inventorytable=coraldb.nominalSchema().createTable( tagInventoryTableDesc );
+    coral::ITable& inventorytable=session.nominalSchema().createTable( tagInventoryTableDesc );
     inventorytable.privilegeManager().grantToPublic( coral::ITablePrivilegeManager::Select);
     std::cout<<"all tables are created"<<std::endl;
     std::cout<<"building tag collection"<<std::endl;
@@ -196,11 +192,8 @@ int main(){
     nodedata["tagid"].data<unsigned int>()=3;
     treeInserter->processNextIteration();
     treeInserter->flush();
-    coraldb.commit();
+    session.transaction().commit();
     delete treeInserter;
-    myconnection.disconnect();
-    delete session;
-    session=0;
   }catch(const cond::Exception& er){
     std::cout<<"error "<<er.what()<<std::endl;
   }catch(const std::exception& er){
