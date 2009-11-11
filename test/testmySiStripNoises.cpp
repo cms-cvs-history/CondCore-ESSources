@@ -32,7 +32,7 @@
 typedef boost::minstd_rand base_generator_type;
 int main(){
   //ROOT::Cintex::Cintex::Enable();
-   edmplugin::PluginManager::Config config;
+  edmplugin::PluginManager::Config config;
   edmplugin::PluginManager::configure(edmplugin::standard::config());
 
   cond::CoralServiceManager pluginmanager;  
