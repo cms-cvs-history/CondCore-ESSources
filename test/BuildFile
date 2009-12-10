@@ -8,7 +8,7 @@
 <use name=RelationalAccess>
 <bin name=CondDataProxy_t file=CondDataProxy_t.cpp>
 <use name=CondCore/Utilities>
-<use name=CondCore/ESSource>
+<use name=CondCore/ESSources>
 </bin> 
 
 
