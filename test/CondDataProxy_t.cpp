@@ -24,8 +24,8 @@
 #include "CondFormats/Common/interface/PayloadWrapper.h"
 #include "CondCore/DBCommon/interface/TypedRef.h"
 
-#include "CondCore/PluginSystem/interface/DataProxy.h"
-#include "CondCore/PluginSystem/interface/ProxyFactory.h"
+#include "CondCore/ESSources/interface/DataProxy.h"
+#include "CondCore/ESSources/interface/ProxyFactory.h"
 #include "CondCore/IOVService/interface/PayloadProxy.h"
 
 #include "CondCore/Utilities/interface/CommonOptions.h"
