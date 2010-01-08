@@ -166,8 +166,8 @@ int main( int argc, char** argv ){
 
   // here the proxy is constructed: 
   cond::DataProxyWrapperBase * pb =  
-    cond::ProxyFactory::get()->create(buildName(record),  mysession, 
-				      cond::DataProxyWrapperBase::Args(db.iovToken(tag), ""));
+    cond::ProxyFactory::get()->create(buildName(record));
+  pb->lateInit(mysession, db.iovToken(tag), "", connect, tag));
 
   cond::DataProxyWrapperBase::ProxyP  payloadProxy = pb->proxy();
 
