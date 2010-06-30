@@ -27,7 +27,7 @@
 #include "CondCore/ESSources/interface/ProxyFactory.h"
 #include "CondCore/IOVService/interface/PayloadProxy.h"
 
-#include "CondCore/Utilities/interface/CommonOptions.h"
+#include "CondCore/Utilities/interface/Utilities.h"
 
 #include "CondCore/DBCommon/interface/ClassID.h"
 
@@ -74,91 +74,42 @@ namespace {
 
 }
 
-int main( int argc, char** argv ){
-  edmplugin::PluginManager::configure(edmplugin::standard::config());
-  cond::CommonOptions myopt("CondDataProxy_t");
-  myopt.addConnect();
-  myopt.addAuthentication(true);
-  myopt.visibles().add_options()
-    ("verbose,v","verbose")
-    ("tag,t",boost::program_options::value<std::string>(),"tag")
-    ("keyed,k",boost::program_options::value<std::string>(),"tag of keyed container")
-    ("record,r",boost::program_options::value<std::string>(),"record")
-    ("atTime,a",boost::program_options::value<cond::Time_t>(),"time of event")
-    ;
+namespace cond {
+  class CondDataProxyUtilities : public Utilities {
+    public:
+      CondDataProxyUtilities();
+      ~CondDataProxyUtilities();
+      int execute();
+  };
+}
 
-  myopt.description().add( myopt.visibles() );
-  boost::program_options::variables_map vm;
-  try{
-    boost::program_options::store(boost::program_options::command_line_parser(argc, argv).options(myopt.description()).run(), vm);
-    boost::program_options::notify(vm);
-  }catch(const boost::program_options::error& er) {
-    std::cerr << er.what()<<std::endl;
-    return 1;
-  }
-  if (vm.count("help")) {
-    std::cout << myopt.visibles() <<std::endl;;
-    return 0;
-  }
+cond::CondDataProxyUtilities::CondDataProxyUtilities():Utilities("CondDataProxy_t"){
+  this->addConnectOption();
+  this->addAuthenticationOptions();
+  addOption<bool>("verbose","v","verbose");
+  addOption<std::string>("tag","t","tag");
+  addOption<std::string>("keyed","k","tag of keyed container");
+  addOption<std::string>("record","r","record");
+  addOption<cond::Time_t>("atTime","a","time of event");
+}
 
+cond::CondDataProxyUtilities::~CondDataProxyUtilities(){
+}
 
-  //  bool verbose=vm.count("verbose");
-  bool debug=vm.count("debug");
+int cond::CondDataProxyUtilities::execute() {
+  this->initializePluginManager();
+  std::string authpath(".");
+  if(this->hasOptionValue("authPath"))
+    authpath = this->getAuthenticationPathValue();
+  std::string connect = this->getConnectValue();
+  std::string tag = this->getOptionValue<std::string>("tag");
+  std::string keyed = this->getOptionValue<std::string>("keyed");
+  std::string record = this->getOptionValue<std::string>("record");
   
-  std::string connect;
-  std::string authPath("");
-  std::string user("");
-  std::string pass("");
-
-  std::string tag;
-  std::string keyed;
-  std::string record;
   cond::Time_t time=0;
-
-  if(!vm.count("connect")){
-    std::cerr <<"[Error] no connect[c] option given \n";
-    std::cerr<<" please do "<<argv[0]<<" --help \n";
-    return 1;
-  }else{
-    connect=vm["connect"].as<std::string>();
-  }
-  if(vm.count("user")){
-    user=vm["user"].as<std::string>();
-  }
-  if(vm.count("pass")){
-    pass=vm["pass"].as<std::string>();
-  }
-  if( vm.count("authPath") ){
-      authPath=vm["authPath"].as<std::string>();
-  }
-
-  if(vm.count("keyed")){
-    keyed=vm["keyed"].as<std::string>();
-  }
-  if(vm.count("tag")){
-    tag=vm["tag"].as<std::string>();
-  }
-  if(vm.count("record")){
-    record=vm["record"].as<std::string>();
-  }
-  if(vm.count("atTime")){
-    time=vm["atTime"].as<cond::Time_t>();
-  }
-
-
-  std::vector<edm::ParameterSet> psets;
-  
-  edm::ParameterSet pSet;
-  pSet.addParameter("@service_type",std::string("SiteLocalConfigService"));
-  psets.push_back(pSet);
-
-  edm::ServiceToken services(edm::ServiceRegistry::createSet(psets));
-  edm::ServiceRegistry::Operate operate(services);
-
-  try{
-
-
-  cond::RDBMS rdbms(authPath, debug);
+  if(this->hasOptionValue("atTime"))
+    time = this->getOptionValue<cond::Time_t>("atTime");
+  cond::RDBMS rdbms(authpath, this->hasDebug());
   cond::CondDB db = rdbms.getDB(connect);
   cond::DbSession mysession = db.session();
 
@@ -199,12 +150,10 @@ int main( int argc, char** argv ){
       
     }
   }
-    
-
-  }catch(const cond::Exception& er){
-    std::cout<<"error "<<er.what()<<std::endl;
-  }catch(const std::exception& er){
-    std::cout<<"std error "<<er.what()<<std::endl;
-  }
   return 0;
+}
+
+int main( int argc, char** argv ){
+  cond::CondDataProxyUtilities utilities;
+  return utilities.run(argc,argv);
 }
